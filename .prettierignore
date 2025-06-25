@@ -1,0 +1,7 @@
+*.md
+.next/
+.idea/
+node_modules/
+pnpm-lock.yaml
+build/
+public/
