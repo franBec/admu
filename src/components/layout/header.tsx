@@ -1,12 +1,13 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { NavUser } from "@/components/layout/nav-user";
+import { ModeToggle } from "@/components/dark-mode/mode-toogle";
 
 export function Header() {
   const currentUser = {
     name: "Jane Doe",
     email: "jane.doe@example.com",
-    avatar: "https://github.com/shadcn.png", // Replace with a real avatar URL or handle if null
+    avatar: "https://github.com/shadcn.png",
   };
 
   return (
@@ -18,7 +19,8 @@ export function Header() {
           className="mr-2 data-[orientation=vertical]:h-4"
         />
       </div>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-2">
+        <ModeToggle />
         <NavUser user={currentUser} />
       </div>
     </header>
