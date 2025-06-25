@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/dark-mode/theme-provider";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Administración Municipal - San Luis", // Your main title
+  title: "Administración Municipal - San Luis",
   description: "Portal de administración municipal para la Ciudad de San Luis.",
   icons: {
     icon: [
@@ -83,9 +84,10 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
+            <SidebarInset className="flex flex-col min-h-screen">
               <Header />
-              {children}
+              <div className="flex-1">{children}</div>
+              <Footer />
             </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>
