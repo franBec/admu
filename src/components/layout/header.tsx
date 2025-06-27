@@ -1,15 +1,10 @@
+import Link from "next/link";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/dark-mode/mode-toogle";
 import { Button } from "@/components/ui/button";
 
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export function Header() {
   return (
@@ -25,13 +20,13 @@ export function Header() {
         <ModeToggle />
 
         <SignedOut>
-          <SignInButton mode="modal">
+          <Link href="/sign-in" passHref>
             <Button variant="ghost">Sign In</Button>
-          </SignInButton>
+          </Link>
 
-          <SignUpButton mode="modal">
+          <Link href="/sign-up" passHref>
             <Button>Sign Up</Button>
-          </SignUpButton>
+          </Link>
         </SignedOut>
 
         <SignedIn>
