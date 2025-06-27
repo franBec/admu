@@ -16,13 +16,13 @@ import {
 
 import { NavMain } from "@/components/layout/nav-main";
 import { NavProjects } from "@/components/layout/nav-projects";
-import { TeamSwitcher } from "@/components/layout/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { AppLogoLink } from "@/components/layout/app-logo-link";
 
 // This is sample data.
 const data = {
@@ -158,7 +158,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <AppLogoLink />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
