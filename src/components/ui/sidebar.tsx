@@ -69,23 +69,63 @@ function SidebarProvider({
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
 
-  // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
+  // 1. Initialize _open to a consistent default for SSR.
+  // This value will be used for the server render and initial client hydration.
   const [_open, _setOpen] = React.useState(defaultOpen);
-  const open = openProp ?? _open;
+
+  // 2. State to track if the component has mounted on the client
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  // 3. Read cookie on client mount and update state
+  React.useEffect(() => {
+    // This runs ONLY on the client after the initial render (hydration).
+    // Safely read from document.cookie here.
+    try {
+      // Added try-catch for robustness, though not strictly necessary in a "use client" component
+      const cookies = document.cookie.split("; ").reduce(
+        (acc, cookie) => {
+          const [name, value] = cookie.split("=");
+          acc[name.trim()] = value; // Trim to handle spaces around cookie names
+          return acc;
+        },
+        {} as Record<string, string>
+      );
+
+      const savedState = cookies[SIDEBAR_COOKIE_NAME];
+      if (savedState !== undefined) {
+        // Convert string "true"/"false" to boolean
+        _setOpen(savedState === "true");
+      }
+    } catch (error) {
+      console.error("Failed to read sidebar cookie:", error);
+      // Fallback to defaultOpen if there's an error reading cookie
+      _setOpen(defaultOpen);
+    }
+
+    setIsMounted(true); // Indicate that the component has fully mounted on the client
+  }, []); // Empty dependency array means this runs once after initial render
+
+  const open = openProp ?? _open; // `open` now reflects `_open` which is updated from cookie.
+
+  // 4. Modify setOpen to only write cookie if mounted on client
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const openState = typeof value === "function" ? value(open) : value;
+
       if (setOpenProp) {
         setOpenProp(openState);
       } else {
         _setOpen(openState);
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      // Only write to document.cookie if the component is mounted on the client.
+      // This ensures document object is available and avoids potential issues
+      // if this somehow runs in an SSR context (though "use client" generally prevents that).
+      if (isMounted) {
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      }
     },
-    [setOpenProp, open]
+    [setOpenProp, open, isMounted] // Added `isMounted` to dependencies
   );
 
   // Helper to toggle the sidebar.
