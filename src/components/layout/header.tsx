@@ -1,6 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/dark-mode/mode-toogle";
+import { Button } from "@/components/ui/button"; // <--- Add this import
 
 import {
   SignInButton,
@@ -25,15 +26,11 @@ export function Header() {
 
         <SignedOut>
           <SignInButton mode="modal">
-            <button className="text-sm font-medium transition-colors hover:text-primary py-2 px-3">
-              Sign In
-            </button>
+            <Button variant="ghost">Sign In</Button>
           </SignInButton>
 
           <SignUpButton mode="modal">
-            <button className="bg-[#6c47ff] text-white rounded-md font-medium text-sm sm:text-base h-10 px-4 sm:px-5 cursor-pointer hover:bg-[#5a36e0] transition-colors">
-              Sign Up
-            </button>
+            <Button>Sign Up</Button>
           </SignUpButton>
         </SignedOut>
 
