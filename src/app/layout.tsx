@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,14 +83,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset className="flex flex-col min-h-screen">
-              <Header />
-              <div className="flex-1">{children}</div>
-              <Footer />
-            </SidebarInset>
-          </SidebarProvider>
+          <ClerkProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset className="flex flex-col min-h-screen">
+                <Header />
+                <div className="flex-1">{children}</div>
+                <Footer />
+              </SidebarInset>
+            </SidebarProvider>
+          </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
