@@ -75,9 +75,9 @@ export const person = pgTable(
     nationalityId: integer("nationality_id"),
     documentTypeId: integer("document_type_id").notNull(),
     documentNumber: text("document_number").notNull(),
-    email: text(),
     phoneNumber: text("phone_number"),
     addressId: integer("address_id"),
+    clerkId: text("clerk_id"),
     createdAt: timestamp("created_at", {
       withTimezone: true,
       mode: "string",
@@ -108,10 +108,16 @@ export const person = pgTable(
       foreignColumns: [address.id],
       name: "person_address_id_fkey",
     }).onDelete("set null"),
+    foreignKey({
+      columns: [table.clerkId],
+      foreignColumns: [clerkUser.clerkId],
+      name: "person_clerk_id_fkey",
+    }).onDelete("set null"),
     unique("person_document_type_id_document_number_key").on(
       table.documentTypeId,
       table.documentNumber
     ),
+    unique("person_clerk_id_key").on(table.clerkId),
   ]
 );
 
@@ -131,10 +137,7 @@ export const clerkUser = pgTable(
     id: serial().primaryKey().notNull(),
     clerkId: text("clerk_id").notNull(),
     email: text().notNull(),
-    firstName: text("first_name"),
-    lastName: text("last_name"),
     imageUrl: text("image_url"),
-    personId: integer("person_id"),
     createdAt: timestamp("created_at", {
       withTimezone: true,
       mode: "string",
@@ -144,13 +147,5 @@ export const clerkUser = pgTable(
       mode: "string",
     }).defaultNow(),
   },
-  table => [
-    foreignKey({
-      columns: [table.personId],
-      foreignColumns: [person.id],
-      name: "clerk_user_person_id_fkey",
-    }).onDelete("set null"),
-    unique("clerk_user_clerk_id_key").on(table.clerkId),
-    unique("clerk_user_person_id_key").on(table.personId),
-  ]
+  table => [unique("clerk_user_clerk_id_key").on(table.clerkId)]
 );

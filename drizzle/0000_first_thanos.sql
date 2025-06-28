@@ -39,12 +39,13 @@ CREATE TABLE "person" (
 	"nationality_id" integer,
 	"document_type_id" integer NOT NULL,
 	"document_number" text NOT NULL,
-	"email" text,
 	"phone_number" text,
 	"address_id" integer,
+	"clerk_id" text,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "person_document_type_id_document_number_key" UNIQUE("document_type_id","document_number")
+	CONSTRAINT "person_document_type_id_document_number_key" UNIQUE("document_type_id","document_number"),
+	CONSTRAINT "person_clerk_id_key" UNIQUE("clerk_id")
 );
 --> statement-breakpoint
 CREATE TABLE "document_type" (
@@ -58,14 +59,10 @@ CREATE TABLE "clerk_user" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"clerk_id" text NOT NULL,
 	"email" text NOT NULL,
-	"first_name" text,
-	"last_name" text,
 	"image_url" text,
-	"person_id" integer,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "clerk_user_clerk_id_key" UNIQUE("clerk_id"),
-	CONSTRAINT "clerk_user_person_id_key" UNIQUE("person_id")
+	CONSTRAINT "clerk_user_clerk_id_key" UNIQUE("clerk_id")
 );
 --> statement-breakpoint
 ALTER TABLE "address" ADD CONSTRAINT "address_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "public"."country"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
@@ -73,5 +70,5 @@ ALTER TABLE "person" ADD CONSTRAINT "person_gender_id_fkey" FOREIGN KEY ("gender
 ALTER TABLE "person" ADD CONSTRAINT "person_nationality_id_fkey" FOREIGN KEY ("nationality_id") REFERENCES "public"."country"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "person" ADD CONSTRAINT "person_document_type_id_fkey" FOREIGN KEY ("document_type_id") REFERENCES "public"."document_type"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "person" ADD CONSTRAINT "person_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "public"."address"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "clerk_user" ADD CONSTRAINT "clerk_user_person_id_fkey" FOREIGN KEY ("person_id") REFERENCES "public"."person"("id") ON DELETE set null ON UPDATE no action;
+ALTER TABLE "person" ADD CONSTRAINT "person_clerk_id_fkey" FOREIGN KEY ("clerk_id") REFERENCES "public"."clerk_user"("clerk_id") ON DELETE set null ON UPDATE no action;
 */

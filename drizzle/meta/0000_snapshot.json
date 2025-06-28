@@ -232,12 +232,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "phone_number": {
           "name": "phone_number",
           "type": "text",
@@ -247,6 +241,12 @@
         "address_id": {
           "name": "address_id",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -306,6 +306,16 @@
           "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
+        },
+        "person_clerk_id_fkey": {
+          "name": "person_clerk_id_fkey",
+          "tableFrom": "person",
+          "tableTo": "clerk_user",
+          "schemaTo": "public",
+          "columnsFrom": ["clerk_id"],
+          "columnsTo": ["clerk_id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -314,6 +324,11 @@
           "columns": ["document_type_id", "document_number"],
           "nullsNotDistinct": false,
           "name": "person_document_type_id_document_number_key"
+        },
+        "person_clerk_id_key": {
+          "columns": ["clerk_id"],
+          "nullsNotDistinct": false,
+          "name": "person_clerk_id_key"
         }
       },
       "checkConstraints": {},
@@ -379,27 +394,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "first_name": {
-          "name": "first_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "last_name": {
-          "name": "last_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "image_url": {
           "name": "image_url",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "person_id": {
-          "name": "person_id",
-          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -419,29 +416,13 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "clerk_user_person_id_fkey": {
-          "name": "clerk_user_person_id_fkey",
-          "tableFrom": "clerk_user",
-          "tableTo": "person",
-          "schemaTo": "public",
-          "columnsFrom": ["person_id"],
-          "columnsTo": ["id"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "clerk_user_clerk_id_key": {
           "columns": ["clerk_id"],
           "nullsNotDistinct": false,
           "name": "clerk_user_clerk_id_key"
-        },
-        "clerk_user_person_id_key": {
-          "columns": ["person_id"],
-          "nullsNotDistinct": false,
-          "name": "clerk_user_person_id_key"
         }
       },
       "checkConstraints": {},

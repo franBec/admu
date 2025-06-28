@@ -21,7 +21,7 @@ export const countryRelations = relations(country, ({ many }) => ({
   people: many(person),
 }));
 
-export const personRelations = relations(person, ({ one, many }) => ({
+export const personRelations = relations(person, ({ one }) => ({
   gender: one(gender, {
     fields: [person.genderId],
     references: [gender.id],
@@ -38,7 +38,10 @@ export const personRelations = relations(person, ({ one, many }) => ({
     fields: [person.addressId],
     references: [address.id],
   }),
-  clerkUsers: many(clerkUser),
+  clerkUser: one(clerkUser, {
+    fields: [person.clerkId],
+    references: [clerkUser.clerkId],
+  }),
 }));
 
 export const genderRelations = relations(gender, ({ many }) => ({
@@ -49,9 +52,6 @@ export const documentTypeRelations = relations(documentType, ({ many }) => ({
   people: many(person),
 }));
 
-export const clerkUserRelations = relations(clerkUser, ({ one }) => ({
-  person: one(person, {
-    fields: [clerkUser.personId],
-    references: [person.id],
-  }),
+export const clerkUserRelations = relations(clerkUser, ({ many }) => ({
+  people: many(person),
 }));
