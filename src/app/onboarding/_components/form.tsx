@@ -234,7 +234,7 @@ export function OnboardingForm({
                       selected={field.value || undefined}
                       onSelect={date => {
                         field.onChange(date);
-                        setIsCalendarOpen(false); // Close popover after selecting
+                        setIsCalendarOpen(false);
                       }}
                       month={calendarMonth}
                       onMonthChange={setCalendarMonth}
