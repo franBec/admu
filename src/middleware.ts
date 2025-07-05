@@ -1,5 +1,12 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import * as Effect from "effect/Effect";
+import * as FiberRef from "effect/FiberRef";
+import {
+  currentRequestUrl,
+  currentTraceId,
+} from "@/lib/fiber-refs";
+import { v4 as uuidv4 } from "uuid";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher([
@@ -44,6 +51,14 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
+
+  const program = Effect.log("Executing middleware").pipe(
+    Effect.locally(currentRequestUrl, req.url),
+    Effect.locally(currentTraceId, uuidv4())
+  );
+
+  await Effect.runPromise(program);
+
   return NextResponse.next();
 });
 

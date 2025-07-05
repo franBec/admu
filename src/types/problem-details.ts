@@ -2,8 +2,8 @@ import * as Data from "effect/Data";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 
 // @ts-ignore
-export const mapToProblemDetails = <T>(
-  e: T extends typeof Data.TaggedError,
+export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
+  e: T,
   status: number,
   requestContext: { requestUrl?: string; traceId?: string }
 ) => {
@@ -19,7 +19,7 @@ export const mapToProblemDetails = <T>(
     case "ZodValidationError":
       return {
         ...problemDetails,
-        detail: (e as ZodValidationError).message
+        detail: (e as ZodValidationError).message,
       };
     default:
       return {

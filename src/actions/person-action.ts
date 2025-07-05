@@ -1,6 +1,11 @@
 "use server";
 
 import * as Effect from "effect/Effect";
+import * as FiberRef from "effect/FiberRef";
+import {
+  currentRequestUrl,
+  currentTraceId,
+} from "@/lib/fiber-refs";
 import {
   onboardingFormSchema,
   OnboardingFormValues,
@@ -33,22 +38,29 @@ export async function onboardPerson(values: OnboardingFormValues) {
       yield* personService.onboardPerson(parsedValues);
       return;
     }).pipe(
-      Effect.catchTag("ZodValidationError", _ZodValidationError => {
-        return Effect.succeed(
-          mapToProblemDetails(_ZodValidationError, 400, {
-            requestUrl: "", //FiberRef.currentRequestUrl
-            traceId: "", //FiberRef.currentTraceId
-          })
-        );
-      }),
-      Effect.catchAll(e => {
-        return Effect.succeed(
-          mapToProblemDetails(e, 500, {
-            requestUrl: "", //FiberRef.currentRequestUrl
-            traceId: "", //FiberRef.currentTraceId
-          })
-        );
-      }),
+      Effect.catchTag("ZodValidationError", _ZodValidationError =>
+        Effect.gen(function* (_) {
+          const traceId = yield* _(FiberRef.get(currentTraceId));
+          const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
+
+          return mapToProblemDetails(_ZodValidationError, 400, {
+            requestUrl,
+            traceId,
+          });
+        })
+      ),
+
+      Effect.catchAll(e =>
+        Effect.gen(function* (_) {
+          const traceId = yield* _(FiberRef.get(currentTraceId));
+          const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
+
+          return mapToProblemDetails(e, 500, {
+            requestUrl,
+            traceId,
+          });
+        })
+      ),
       Effect.provide(PersonServiceLive),
       Effect.provide(PersonRepositoryLive),
       Effect.provide(DrizzleServiceLive)
