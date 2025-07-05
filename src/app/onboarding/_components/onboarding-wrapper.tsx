@@ -1,18 +1,25 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { OnboardingForm } from "./form";
+import { OnboardingForm } from "@/app/onboarding/_components/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Country,
-  DocumentType,
-  Gender,
-} from "@/features/person/adapter/out/drizzle/person-repository-impl";
 
 interface OnboardingWrapperProps {
-  countries: Country[];
-  genders: Gender[];
-  documentTypes: DocumentType[];
+  countries: readonly {
+    id: number;
+    alpha2Code: string;
+    name: string;
+  }[];
+  genders: readonly {
+    id: number;
+    code: string;
+    name: string;
+  }[];
+  documentTypes: readonly {
+    id: number;
+    code: string;
+    name: string;
+  }[];
 }
 
 export function OnboardingWrapper({
@@ -26,19 +33,17 @@ export function OnboardingWrapper({
     return <OnboardingFormSkeleton />;
   }
 
-  const initialUserData = {
-    givenName: user?.firstName || "",
-    familyName: user?.lastName || "",
-    email: user?.emailAddresses?.[0]?.emailAddress || "",
-    phoneNumber: user?.phoneNumbers?.[0]?.phoneNumber || "",
-  };
-
   return (
     <OnboardingForm
       countries={countries}
       genders={genders}
       documentTypes={documentTypes}
-      initialUserData={initialUserData}
+      initialUserData={{
+        givenName: user?.firstName || "",
+        familyName: user?.lastName || "",
+        email: user?.emailAddresses?.[0]?.emailAddress || "",
+        phoneNumber: user?.phoneNumbers?.[0]?.phoneNumber || "",
+      }}
     />
   );
 }

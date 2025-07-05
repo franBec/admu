@@ -4,7 +4,9 @@ import { sql } from "drizzle-orm";
 import { PersonRepositoryTag } from "@/repositories/person-repository-tag";
 import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
 import { DatabaseQueryError } from "@/errors/database-query-error";
+import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { address, clerkUser, person } from "@/db/schema";
+import { Cause } from "effect";
 
 export const PersonRepositoryLive = Layer.effect(
   PersonRepositoryTag,
@@ -13,39 +15,36 @@ export const PersonRepositoryLive = Layer.effect(
 
     return {
       onboardPerson: (personData, clerkUserData, addressData) =>
-        Effect.tryPromise({
+        Effect.tryPromise<
+          {
+            id: number;
+          },
+          DatabaseQueryError | PersonConstraintViolationError
+        >({
           try: () =>
             db.transaction(async tx => {
               //clerkUser
-              Effect.tryPromise({
-                try: () =>
-                  tx
-                    .insert(clerkUser)
-                    .values({
-                      clerkId: clerkUserData.clerkId,
-                      email: clerkUserData.email,
-                      imageUrl: clerkUserData.imageUrl,
-                    })
-                    .onConflictDoUpdate({
-                      target: clerkUser.clerkId,
-                      set: {
-                        email: clerkUserData.email,
-                        imageUrl: clerkUserData.imageUrl,
-                        updatedAt: sql`now()`,
-                      },
-                    }),
-                catch: e => new DatabaseQueryError({ e }),
-              }).pipe(Effect.runSync);
+              await tx
+                .insert(clerkUser)
+                .values({
+                  clerkId: clerkUserData.clerkId,
+                  email: clerkUserData.email,
+                  imageUrl: clerkUserData.imageUrl,
+                })
+                .onConflictDoUpdate({
+                  target: clerkUser.clerkId,
+                  set: {
+                    email: clerkUserData.email,
+                    imageUrl: clerkUserData.imageUrl,
+                    updatedAt: sql`now()`,
+                  },
+                });
 
               //address
-              const [newAddress] = Effect.tryPromise({
-                try: () =>
-                  tx
-                    .insert(address)
-                    .values(addressData)
-                    .returning({ id: address.id }),
-                catch: e => new DatabaseQueryError({ e }),
-              }).pipe(Effect.runSync);
+              const [newAddress] = await tx
+                .insert(address)
+                .values(addressData)
+                .returning({ id: address.id });
 
               //person
               const personInsertData = {
@@ -61,19 +60,35 @@ export const PersonRepositoryLive = Layer.effect(
                 clerkId: clerkUserData.clerkId,
               };
 
-              const [newPerson] = Effect.tryPromise({
-                try: () =>
-                  tx
-                    .insert(person)
-                    .values(personInsertData)
-                    .returning({ id: person.id }),
-                catch: e => new DatabaseQueryError({ e }),
-              }).pipe(Effect.runSync);
+              const [newPerson] = await tx
+                .insert(person)
+                .values(personInsertData)
+                .returning({ id: person.id });
 
               return newPerson;
             }),
-          catch: e => new DatabaseQueryError({ e }),
-        }),
+          catch: e => {
+            if (
+              (e as any).cause?.constraint ===
+              "person_document_type_id_document_number_key"
+            ) {
+              return new PersonConstraintViolationError({
+                message:
+                  "Person with this document type and number already exists.",
+              });
+            }
+            return new DatabaseQueryError({
+              e,
+              message: (e as any).cause?.detail || "An error has occurred",
+            });
+          },
+        }).pipe(
+          Effect.tap(response => Effect.log(response)),
+          Effect.tapError(e => Effect.logError(Cause.die(e))),
+          Effect.withLogSpan(
+            "src/repositories/person-repository-live.ts>PersonRepositoryLive>onboardPerson()"
+          )
+        ),
     };
   })
 );

@@ -7,7 +7,7 @@ import { ChevronDownIcon } from "lucide-react";
 import {
   OnboardingFormValues,
   onboardingFormSchema,
-} from "@/features/person/adapter/in/server-function/schema/onboarding-form-schema";
+} from "@/schemas/onboarding-form-schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -33,19 +33,27 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import {
-  Country,
-  DocumentType,
-  Gender,
-} from "@/features/person/adapter/out/drizzle/person-repository-impl";
 import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { completeOnboarding } from "@/features/person/adapter/in/server-function/complete-onboarding";
+import { onboardPerson } from "@/actions/person-action";
+import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
 
 interface OnboardingFormProps {
-  countries: Country[];
-  genders: Gender[];
-  documentTypes: DocumentType[];
+  countries: readonly {
+    id: number;
+    alpha2Code: string;
+    name: string;
+  }[];
+  genders: readonly {
+    id: number;
+    code: string;
+    name: string;
+  }[];
+  documentTypes: readonly {
+    id: number;
+    code: string;
+    name: string;
+  }[];
   initialUserData: {
     givenName: string;
     familyName: string;
@@ -53,6 +61,14 @@ interface OnboardingFormProps {
     phoneNumber: string;
   };
 }
+
+type ProblemDetails = {
+  status: number;
+  instance?: string;
+  timestamp: string;
+  trace?: string;
+  detail: string;
+};
 
 export function OnboardingForm({
   countries,
@@ -63,6 +79,7 @@ export function OnboardingForm({
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [error, setError] = useState<ProblemDetails | null>(null);
 
   const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(
     undefined
@@ -93,43 +110,43 @@ export function OnboardingForm({
     },
   });
 
-  async function onSubmit(values: OnboardingFormValues) {
+  function onSubmit(values: OnboardingFormValues) {
     setIsPending(true);
-    startTransition(async () => {
-      try {
-        const dataToSubmit = {
-          ...values,
-          birthDate: values.birthDate
-            ? format(values.birthDate, "yyyy-MM-dd")
-            : null,
-          address:
-            values.address && Object.values(values.address).some(val => val)
-              ? values.address
-              : undefined,
-        };
-
-        const result = await completeOnboarding(
-          dataToSubmit as unknown as Parameters<typeof completeOnboarding>[0]
-        );
-
-        if (result.success) {
+    setError(null);
+    startTransition(() => {
+      onboardPerson(values)
+        .then(result => {
+          if (result) {
+            setError(result);
+            setIsPending(false);
+            return;
+          }
           router.push("/");
-          router.refresh();
-        } else {
-          console.error("Onboarding failed:", result.error);
-          alert(`Onboarding failed: ${result.error}`);
-        }
-      } catch (error) {
-        console.error("An unexpected error occurred:", error);
-        alert("An unexpected error occurred during onboarding.");
-      } finally {
-        setIsPending(false);
-      }
+        })
+        .catch(() => {
+          setError({
+            status: 500,
+            detail: "An unexpected error occurred. Please try again later.",
+            timestamp: new Date().toISOString(),
+          });
+          setIsPending(false);
+        });
     });
   }
 
   return (
     <Form {...form}>
+      <div className="mb-4">
+        {error && (
+          <ProblemDetailsAlert
+            status={error.status}
+            instance={error.instance}
+            timestamp={error.timestamp}
+            trace={error.trace}
+            detail={error.detail}
+          />
+        )}
+      </div>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 p-4 md:p-8 border rounded-lg shadow-sm w-full max-w-2xl bg-card text-card-foreground"

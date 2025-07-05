@@ -4,6 +4,7 @@ import { DatabaseQueryError } from "@/errors/database-query-error";
 import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
 import { documentType } from "@/db/schema";
 import { DocumentTypeRepositoryTag } from "@/repositories/document-type-repository-tag";
+import { Cause } from "effect";
 
 export const DocumentTypeRepositoryLive = Layer.effect(
   DocumentTypeRepositoryTag,
@@ -14,7 +15,13 @@ export const DocumentTypeRepositoryLive = Layer.effect(
         Effect.tryPromise({
           try: () => db.select().from(documentType),
           catch: e => new DatabaseQueryError({ e }),
-        }),
+        }).pipe(
+          Effect.withLogSpan(
+            "src/repositories/document-type-repository-live.ts>DocumentTypeRepositoryLive>findAll()"
+          ),
+          Effect.tap(() => Effect.log()),
+          Effect.tapError(e => Effect.logError(Cause.die(e)))
+        ),
     };
   })
 );

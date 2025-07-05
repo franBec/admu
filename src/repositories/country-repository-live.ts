@@ -4,6 +4,7 @@ import { CountryRepositoryTag } from "@/repositories/country-repository-tag";
 import { country } from "@/db/schema";
 import { DatabaseQueryError } from "@/errors/database-query-error";
 import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
+import { Cause } from "effect";
 
 export const CountryRepositoryLive = Layer.effect(
   CountryRepositoryTag,
@@ -14,7 +15,13 @@ export const CountryRepositoryLive = Layer.effect(
         Effect.tryPromise({
           try: () => db.select().from(country),
           catch: e => new DatabaseQueryError({ e }),
-        }),
+        }).pipe(
+          Effect.withLogSpan(
+            "src/repositories/country-repository-live.ts>CountryRepositoryLive>findAll()"
+          ),
+          Effect.tap(() => Effect.log()),
+          Effect.tapError(e => Effect.logError(Cause.die(e)))
+        ),
     };
   })
 );

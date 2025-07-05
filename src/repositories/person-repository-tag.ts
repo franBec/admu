@@ -2,6 +2,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import { DatabaseQueryError } from "@/errors/database-query-error";
 import { address, clerkUser, person } from "@/db/schema";
+import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 
 export type PersonOnboardData = Omit<
   typeof person.$inferInsert,
@@ -24,6 +25,9 @@ export class PersonRepositoryTag extends Context.Tag("PersonRepositoryTag")<
       personData: PersonOnboardData,
       clerkUserData: ClerkUserOnboardData,
       addressData: AddressOnboardData
-    ) => Effect.Effect<{ id: number }, DatabaseQueryError>;
+    ) => Effect.Effect<
+      { id: number },
+      DatabaseQueryError | PersonConstraintViolationError
+    >;
   }
 >() {}

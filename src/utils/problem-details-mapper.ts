@@ -1,14 +1,15 @@
 import * as Data from "effect/Data";
 import { ZodValidationError } from "@/errors/zod-validation-error";
+import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 
 // @ts-ignore
 export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
   e: T,
   status: number,
-  requestContext: { requestUrl?: string; traceId?: string }
+  requestContext: { requestUrl: string | null; traceId: string | null }
 ) => {
   const problemDetails = {
-    title: e._tag,
+    title: e._tag as string,
     status: status,
     instance: requestContext?.requestUrl,
     timestamp: new Date().toISOString(),
@@ -16,6 +17,11 @@ export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
   };
 
   switch (e._tag) {
+    case "PersonConstraintViolationError":
+      return {
+        ...problemDetails,
+        detail: (e as PersonConstraintViolationError).message,
+      };
     case "ZodValidationError":
       return {
         ...problemDetails,
