@@ -138,17 +138,6 @@ export function OnboardingForm({
 
   return (
     <Form {...form}>
-      <div className="mb-4">
-        {error && (
-          <ProblemDetailsAlert
-            status={error.status}
-            instance={error.instance}
-            timestamp={error.timestamp}
-            trace={error.trace}
-            detail={error.detail}
-          />
-        )}
-      </div>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 p-4 md:p-8 border rounded-lg shadow-sm w-full max-w-2xl bg-card text-card-foreground"
@@ -499,6 +488,15 @@ export function OnboardingForm({
             )}
           />
         </div>
+        {error && (
+          <ProblemDetailsAlert
+            status={error.status}
+            instance={error.instance}
+            timestamp={error.timestamp}
+            trace={error.trace}
+            detail={error.detail}
+          />
+        )}
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? "Submitting..." : "Complete Onboarding"}

@@ -74,7 +74,7 @@ export const PersonRepositoryLive = Layer.effect(
             ) {
               return new PersonConstraintViolationError({
                 message:
-                  "Person with this document type and number already exists.",
+                  "A person with this document type and number already exists.",
               });
             }
             return new DatabaseQueryError({ e });
