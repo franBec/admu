@@ -17,6 +17,7 @@ import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import { mapToProblemDetails } from "@/utils/problem-details-mapper";
 import { Cause } from "effect";
 import { headers } from "next/headers";
+import { ClerkServiceLive } from "@/services/clerk-service-live";
 
 export async function onboardPerson(values: OnboardingFormValues) {
   const headersList = await headers();
@@ -80,6 +81,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
       })
     ),
     Effect.provide(PersonServiceLive),
+    Effect.provide(ClerkServiceLive),
     Effect.provide(PersonRepositoryLive),
     Effect.provide(DrizzleServiceLive),
     Effect.locally(currentTraceId, traceId),

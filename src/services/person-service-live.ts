@@ -2,23 +2,19 @@ import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import { PersonServiceTag } from "@/services/person-service-tag";
 import { PersonRepositoryTag } from "@/repositories/person-repository-tag";
-import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import { ClerkServiceTag } from "@/services/clerk-service-tag";
 import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-found-error";
-import { ClerkCurrentUserHookError } from "@/errors/clerk-current-user-hook-error";
-import { ClerkClientHookError } from "@/errors/clerk-client-hook-error";
 
 export const PersonServiceLive = Layer.effect(
   PersonServiceTag,
   Effect.gen(function* () {
     const personRepository = yield* PersonRepositoryTag;
+    const clerkService = yield* ClerkServiceTag;
 
     return {
       onboardPerson: onboardData =>
         Effect.gen(function* () {
-          const user = yield* Effect.tryPromise({
-            try: () => currentUser(),
-            catch: e => new ClerkCurrentUserHookError({ e }),
-          });
+          const user = yield* clerkService.getCurrentUser;
 
           if (!user) {
             return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
@@ -27,7 +23,7 @@ export const PersonServiceLive = Layer.effect(
           const clerkUserData = {
             clerkId: user.id,
             imageUrl: user.imageUrl,
-            email: user.primaryEmailAddress?.emailAddress!,
+            email: user.primaryEmailAddress?.emailAddress ?? "",
           };
 
           const { address, ...personData } = onboardData;
@@ -41,16 +37,8 @@ export const PersonServiceLive = Layer.effect(
             address
           );
 
-          yield* Effect.tryPromise({
-            try: async () => {
-              const client = await clerkClient();
-              return client.users.updateUser(user.id, {
-                publicMetadata: {
-                  onboardingComplete: true,
-                },
-              });
-            },
-            catch: e => new ClerkClientHookError({ e }),
+          yield* clerkService.updateUserPublicMetadata(user.id, {
+            onboardingComplete: true,
           });
 
           return person;

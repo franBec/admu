@@ -3,8 +3,7 @@ import * as Effect from "effect/Effect";
 import { OnboardingFormValues } from "@/schemas/onboarding-form-schema";
 import { DatabaseQueryError } from "@/errors/database-query-error";
 import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-found-error";
-import { ClerkCurrentUserHookError } from "@/errors/clerk-current-user-hook-error";
-import { ClerkClientHookError } from "@/errors/clerk-client-hook-error";
+import { ClerkNextjsServerError } from "@/errors/clerk-nextjs-server-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 
 export class PersonServiceTag extends Context.Tag("PersonServiceTag")<
@@ -17,8 +16,7 @@ export class PersonServiceTag extends Context.Tag("PersonServiceTag")<
       | DatabaseQueryError
       | PersonConstraintViolationError
       | ClerkCurrentUserNotFoundError
-      | ClerkCurrentUserHookError
-      | ClerkClientHookError
+      | ClerkNextjsServerError
     >;
   }
 >() {}

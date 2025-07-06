@@ -1,8 +1,8 @@
 import * as Data from "effect/Data";
 import { UNEXPECTED_ERROR } from "@/utils/constants";
 
-export class ClerkClientHookError extends Data.TaggedError(
-  "ClerkClientHookError"
+export class ClerkNextjsServerError extends Data.TaggedError(
+  "ClerkNextjsServerError"
 )<{
   e: unknown;
   message?: string;
