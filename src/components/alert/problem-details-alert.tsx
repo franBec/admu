@@ -1,57 +1,47 @@
-"use client"
+"use client";
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { AlertCircle, AlertTriangle, Info } from "lucide-react"
-import * as React from "react"
+} from "@/components/ui/collapsible";
+import { AlertCircle, AlertTriangle, Info } from "lucide-react";
+import * as React from "react";
 
 type ProblemDetailsAlertProps = {
-  status: number
-  instance?: string
-  timestamp: string
-  trace?: string
-  detail: string
-}
+  status: number;
+  instance?: string;
+  timestamp: string;
+  trace?: string;
+  detail: string;
+};
 
 function getVariantFromStatus(status: number) {
   if (status >= 400 && status < 600) {
-    return "destructive"
+    return "destructive";
   }
-  return "default"
+  return "default";
 }
 
 function getTitleFromStatus(status: number): string {
   if (status >= 500) {
-    return "Server Error"
+    return "Something went wrong on our end.";
   }
   if (status >= 400) {
-    return "Client Error"
+    return "There was a problem with your request.";
   }
-  if (status >= 300) {
-    return "Redirection"
-  }
-  if (status >= 200) {
-    return "Success"
-  }
-  return "Information"
+  return "Information";
 }
 
 function getIconFromStatus(status: number) {
   if (status >= 500) {
-    return <AlertTriangle className="h-4 w-4" />
+    return <AlertTriangle className="h-4 w-4" />;
   }
   if (status >= 400) {
-    return <AlertCircle className="h-4 w-4" />
+    return <AlertCircle className="h-4 w-4" />;
   }
-  return <Info className="h-4 w-4" />
+  return <Info className="h-4 w-4" />;
 }
 
 export function ProblemDetailsAlert({
@@ -61,9 +51,9 @@ export function ProblemDetailsAlert({
   trace,
   detail,
 }: ProblemDetailsAlertProps) {
-  const variant = getVariantFromStatus(status)
-  const title = getTitleFromStatus(status)
-  const icon = getIconFromStatus(status)
+  const variant = getVariantFromStatus(status);
+  const title = getTitleFromStatus(status);
+  const icon = getIconFromStatus(status);
 
   return (
     <Alert variant={variant}>
@@ -83,5 +73,5 @@ export function ProblemDetailsAlert({
         </Collapsible>
       </AlertDescription>
     </Alert>
-  )
+  );
 }
