@@ -1,6 +1,7 @@
 import * as Data from "effect/Data";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
+import { UNEXPECTED_ERROR } from "@/utils/constants";
 
 // @ts-ignore
 export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
@@ -30,7 +31,7 @@ export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
     default:
       return {
         ...problemDetails,
-        detail: `An unexpected internal error occurred. Please try again later`,
+        detail: UNEXPECTED_ERROR,
       };
   }
 };

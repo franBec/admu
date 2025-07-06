@@ -11,9 +11,9 @@ import * as React from "react";
 
 type ProblemDetailsAlertProps = {
   status: number;
-  instance?: string;
+  instance: string | null;
   timestamp: string;
-  trace?: string;
+  trace: string | null;
   detail: string;
 };
 

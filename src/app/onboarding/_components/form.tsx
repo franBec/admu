@@ -64,9 +64,9 @@ interface OnboardingFormProps {
 
 type ProblemDetails = {
   status: number;
-  instance?: string;
+  instance: string | null;
   timestamp: string;
-  trace?: string;
+  trace: string | null;
   detail: string;
 };
 
@@ -128,6 +128,8 @@ export function OnboardingForm({
             status: 500,
             detail: "An unexpected error occurred. Please try again later.",
             timestamp: new Date().toISOString(),
+            instance: null,
+            trace: null,
           });
           setIsPending(false);
         });

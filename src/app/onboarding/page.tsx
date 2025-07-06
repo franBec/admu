@@ -32,9 +32,9 @@ const Page = async () => {
           <ProblemDetailsAlert
             key={i}
             status={error.status as number}
-            instance={error.instance as string | undefined}
+            instance={error.instance as string | null}
             timestamp={error.timestamp as string}
-            trace={error.trace as string | undefined}
+            trace={error.trace as string | null}
             detail={error.detail as string}
           />
         ))}

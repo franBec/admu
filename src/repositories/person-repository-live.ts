@@ -77,10 +77,7 @@ export const PersonRepositoryLive = Layer.effect(
                   "Person with this document type and number already exists.",
               });
             }
-            return new DatabaseQueryError({
-              e,
-              message: (e as any).cause?.detail || "An error has occurred",
-            });
+            return new DatabaseQueryError({ e });
           },
         }).pipe(
           Effect.tap(response => Effect.log(response)),
