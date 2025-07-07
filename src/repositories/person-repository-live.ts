@@ -15,70 +15,73 @@ export const PersonRepositoryLive = Layer.effect(
 
     return {
       onboardPerson: (personData, clerkUserData, addressData) =>
-        Effect.tryPromise<
-          {
-            id: number;
-          },
-          DatabaseQueryError | PersonConstraintViolationError
-        >({
-          try: () =>
-            db.transaction(async tx => {
-              //clerkUser
-              await tx
-                .insert(clerkUser)
-                .values({
-                  clerkId: clerkUserData.clerkId,
-                  email: clerkUserData.email,
-                  imageUrl: clerkUserData.imageUrl,
-                })
-                .onConflictDoUpdate({
-                  target: clerkUser.clerkId,
-                  set: {
+        Effect.gen(function* () {
+          yield* Effect.log({ personData, clerkUserData, addressData });
+          return yield* Effect.tryPromise<
+            {
+              id: number;
+            },
+            DatabaseQueryError | PersonConstraintViolationError
+          >({
+            try: () =>
+              db.transaction(async tx => {
+                //clerkUser
+                await tx
+                  .insert(clerkUser)
+                  .values({
+                    clerkId: clerkUserData.clerkId,
                     email: clerkUserData.email,
                     imageUrl: clerkUserData.imageUrl,
-                    updatedAt: sql`now()`,
-                  },
+                  })
+                  .onConflictDoUpdate({
+                    target: clerkUser.clerkId,
+                    set: {
+                      email: clerkUserData.email,
+                      imageUrl: clerkUserData.imageUrl,
+                      updatedAt: sql`now()`,
+                    },
+                  });
+
+                //address
+                const [newAddress] = await tx
+                  .insert(address)
+                  .values(addressData)
+                  .returning({ id: address.id });
+
+                //person
+                const personInsertData = {
+                  givenName: personData.givenName,
+                  familyName: personData.familyName,
+                  genderId: personData.genderId,
+                  birthDate: personData.birthDate,
+                  nationalityId: personData.nationalityId,
+                  documentTypeId: personData.documentTypeId,
+                  documentNumber: personData.documentNumber,
+                  phoneNumber: personData.phoneNumber,
+                  addressId: newAddress.id,
+                  clerkId: clerkUserData.clerkId,
+                };
+
+                const [newPerson] = await tx
+                  .insert(person)
+                  .values(personInsertData)
+                  .returning({ id: person.id });
+
+                return newPerson;
+              }),
+            catch: e => {
+              if (
+                (e as any).cause?.constraint ===
+                "person_document_type_id_document_number_key"
+              ) {
+                return new PersonConstraintViolationError({
+                  message:
+                    "A person with this document type and number already exists.",
                 });
-
-              //address
-              const [newAddress] = await tx
-                .insert(address)
-                .values(addressData)
-                .returning({ id: address.id });
-
-              //person
-              const personInsertData = {
-                givenName: personData.givenName,
-                familyName: personData.familyName,
-                genderId: personData.genderId,
-                birthDate: personData.birthDate,
-                nationalityId: personData.nationalityId,
-                documentTypeId: personData.documentTypeId,
-                documentNumber: personData.documentNumber,
-                phoneNumber: personData.phoneNumber,
-                addressId: newAddress.id,
-                clerkId: clerkUserData.clerkId,
-              };
-
-              const [newPerson] = await tx
-                .insert(person)
-                .values(personInsertData)
-                .returning({ id: person.id });
-
-              return newPerson;
-            }),
-          catch: e => {
-            if (
-              (e as any).cause?.constraint ===
-              "person_document_type_id_document_number_key"
-            ) {
-              return new PersonConstraintViolationError({
-                message:
-                  "A person with this document type and number already exists.",
-              });
-            }
-            return new DatabaseQueryError({ e });
-          },
+              }
+              return new DatabaseQueryError({ e });
+            },
+          });
         }).pipe(
           Effect.tap(response => Effect.log(response)),
           Effect.tapError(e => Effect.logError(Cause.die(e))),
