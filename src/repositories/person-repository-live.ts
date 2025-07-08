@@ -52,10 +52,10 @@ export const PersonRepositoryLive = Layer.effect(
                 const personInsertData = {
                   givenName: personData.givenName,
                   familyName: personData.familyName,
-                  genderId: personData.genderId,
+                  genderCode: personData.genderCode,
                   birthDate: personData.birthDate,
-                  nationalityId: personData.nationalityId,
-                  documentTypeId: personData.documentTypeId,
+                  nationalityAlpha2Code: personData.nationalityAlpha2Code,
+                  documentTypeCode: personData.documentTypeCode,
                   documentNumber: personData.documentNumber,
                   phoneNumber: personData.phoneNumber,
                   addressId: newAddress.id,

@@ -91,21 +91,21 @@ export function OnboardingForm({
       givenName: initialUserData.givenName,
       familyName: initialUserData.familyName,
       email: initialUserData.email,
-      genderId: undefined,
+      genderCode: undefined,
       birthDate: new Date("2000-01-01"),
-      nationalityId: undefined,
-      documentTypeId: undefined,
-      documentNumber: "",
+      nationalityAlpha2Code: undefined,
+      documentTypeCode: undefined,
+      documentNumber: undefined,
       phoneNumber: initialUserData.phoneNumber,
       address: {
-        street: "",
-        number: "",
-        floor: "",
-        apartment: "",
-        city: "",
-        postalCode: "",
-        province: "",
-        countryId: undefined,
+        street: undefined,
+        number: undefined,
+        floor: undefined,
+        apartment: undefined,
+        city: undefined,
+        postalCode: undefined,
+        province: undefined,
+        countryAlpha2Code: undefined,
       },
     },
   });
@@ -259,10 +259,10 @@ export function OnboardingForm({
           />
           <FormField
             control={form.control}
-            name="genderId"
+            name="genderCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gender (Optional)</FormLabel>
+                <FormLabel>Gender</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value?.toString()}
@@ -274,7 +274,7 @@ export function OnboardingForm({
                   </FormControl>
                   <SelectContent>
                     {genders.map(gender => (
-                      <SelectItem key={gender.id} value={gender.id.toString()}>
+                      <SelectItem key={gender.code} value={gender.code}>
                         {gender.name}
                       </SelectItem>
                     ))}
@@ -286,10 +286,10 @@ export function OnboardingForm({
           />
           <FormField
             control={form.control}
-            name="nationalityId"
+            name="nationalityAlpha2Code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nationality (Optional)</FormLabel>
+                <FormLabel>Nationality</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value?.toString()}
@@ -302,8 +302,8 @@ export function OnboardingForm({
                   <SelectContent>
                     {countries.map(country => (
                       <SelectItem
-                        key={country.id}
-                        value={country.id.toString()}
+                        key={country.alpha2Code}
+                        value={country.alpha2Code}
                       >
                         {country.name}
                       </SelectItem>
@@ -316,7 +316,7 @@ export function OnboardingForm({
           />
           <FormField
             control={form.control}
-            name="documentTypeId"
+            name="documentTypeCode"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Document Type</FormLabel>
@@ -331,10 +331,7 @@ export function OnboardingForm({
                   </FormControl>
                   <SelectContent>
                     {documentTypes.map(docType => (
-                      <SelectItem
-                        key={docType.id}
-                        value={docType.id.toString()}
-                      >
+                      <SelectItem key={docType.code} value={docType.code}>
                         {docType.name}
                       </SelectItem>
                     ))}
@@ -436,7 +433,7 @@ export function OnboardingForm({
             name="address.postalCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Postal Code (Optional)</FormLabel>
+                <FormLabel>Postal Code</FormLabel>
                 <FormControl>
                   <Input placeholder="5700" {...field} />
                 </FormControl>
@@ -449,7 +446,7 @@ export function OnboardingForm({
             name="address.province"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Province (Optional)</FormLabel>
+                <FormLabel>Province</FormLabel>
                 <FormControl>
                   <Input placeholder="San Luis" {...field} />
                 </FormControl>
@@ -459,10 +456,10 @@ export function OnboardingForm({
           />
           <FormField
             control={form.control}
-            name="address.countryId"
+            name="address.countryAlpha2Code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Country (Optional)</FormLabel>
+                <FormLabel>Country</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value?.toString()}
@@ -475,8 +472,8 @@ export function OnboardingForm({
                   <SelectContent>
                     {countries.map(country => (
                       <SelectItem
-                        key={country.id}
-                        value={country.id.toString()}
+                        key={country.alpha2Code}
+                        value={country.alpha2Code}
                       >
                         {country.name}
                       </SelectItem>

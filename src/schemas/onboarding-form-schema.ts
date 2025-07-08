@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const onboardingFormSchema = z.object({
-  givenName: z.string().min(1, { message: "First name is required." }),
-  familyName: z.string().min(1, { message: "Last name is required." }),
-  genderId: z.coerce.number(),
+  givenName: z.string().nonempty(),
+  familyName: z.string().nonempty(),
+  genderCode: z.string().nonempty(),
   birthDate: z.coerce
     .date({
       errorMap: (issue, ctx) => {
@@ -16,25 +16,24 @@ export const onboardingFormSchema = z.object({
     .refine(date => date < new Date(), {
       message: "Birth date cannot be in the future.",
     }),
-  nationalityId: z.coerce.number(),
-  documentTypeId: z.coerce
-    .number()
-    .min(1, { message: "Document type is required." }),
-  documentNumber: z
+  nationalityAlpha2Code: z
     .string()
-    .min(1, { message: "Document number is required." }),
+    .length(2, { message: "Invalid nationality." }),
+  documentTypeCode: z.string(),
+  documentNumber: z.string().nonempty(),
   email: z.string().email({ message: "Invalid email address." }),
-  phoneNumber: z.string(),
-
+  phoneNumber: z.string().optional(),
   address: z.object({
-    street: z.string().min(1, { message: "Street is required." }),
-    number: z.string().optional().or(z.literal("")),
-    floor: z.string().optional().or(z.literal("")),
-    apartment: z.string().optional().or(z.literal("")),
-    city: z.string().min(1, { message: "City is required." }),
-    postalCode: z.string().optional().or(z.literal("")),
-    province: z.string().optional().or(z.literal("")),
-    countryId: z.coerce.number().optional(),
+    street: z.string().nonempty(),
+    number: z.string().optional(),
+    floor: z.string().optional(),
+    apartment: z.string().optional(),
+    city: z.string().nonempty(),
+    postalCode: z.string().nonempty(),
+    province: z.string(),
+    countryAlpha2Code: z
+      .string()
+      .length(2, { message: "Invalid address country." }),
   }),
 });
 
