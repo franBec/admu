@@ -2,11 +2,11 @@
 -- from the tables listed below.
 
 ALTER TABLE "clerk_user" DROP CONSTRAINT IF EXISTS "clerk_user_person_id_fkey";
-ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_gender_id_fkey";
-ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_nationality_id_fkey";
-ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_document_type_id_fkey";
+ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_gender_code_fkey";
+ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_nationality_alpha_2_code_fkey";
+ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_document_type_code_fkey";
 ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_address_id_fkey";
-ALTER TABLE "address" DROP CONSTRAINT IF EXISTS "address_country_id_fkey";
+ALTER TABLE "address" DROP CONSTRAINT IF EXISTS "address_country_alpha_2_code_fkey";
 ALTER TABLE "person" DROP CONSTRAINT IF EXISTS "person_clerk_id_fkey";
 
 DROP TABLE IF EXISTS "clerk_user";
@@ -20,7 +20,8 @@ CREATE TABLE "country" (
                            "id" serial PRIMARY KEY NOT NULL,
                            "alpha_2_code" char(2) NOT NULL,
                            "name" text NOT NULL,
-                           CONSTRAINT "country_alpha_2_code_key" UNIQUE("alpha_2_code")
+                           CONSTRAINT "country_alpha_2_code_key" UNIQUE("alpha_2_code"),
+                           CONSTRAINT "country_name_key" UNIQUE("name")
 );
 
 CREATE TABLE "address" (
@@ -32,7 +33,7 @@ CREATE TABLE "address" (
                            "city" text NOT NULL,
                            "postal_code" text,
                            "province" text,
-                           "country_id" integer,
+                           "country_alpha_2_code" char(2),
                            "created_at" timestamp with time zone DEFAULT now(),
                            "updated_at" timestamp with time zone DEFAULT now()
 );
@@ -41,14 +42,16 @@ CREATE TABLE "gender" (
                           "id" serial PRIMARY KEY NOT NULL,
                           "code" text NOT NULL,
                           "name" text NOT NULL,
-                          CONSTRAINT "gender_code_key" UNIQUE("code")
+                          CONSTRAINT "gender_code_key" UNIQUE("code"),
+                          CONSTRAINT "gender_name_key" UNIQUE("name")
 );
 
 CREATE TABLE "document_type" (
                                  "id" serial PRIMARY KEY NOT NULL,
                                  "code" text NOT NULL,
                                  "name" text NOT NULL,
-                                 CONSTRAINT "document_type_code_key" UNIQUE("code")
+                                 CONSTRAINT "document_type_code_key" UNIQUE("code"),
+                                 CONSTRAINT "document_type_name_key" UNIQUE("name")
 );
 
 CREATE TABLE "clerk_user" (
@@ -66,23 +69,23 @@ CREATE TABLE "person" (
                           "given_name" text NOT NULL,
                           "family_name" text NOT NULL,
                           "full_name" text GENERATED ALWAYS AS (((given_name || ' '::text) || family_name)) STORED,
-                          "gender_id" integer,
+                          "gender_code" text,
                           "birth_date" date NOT NULL,
-                          "nationality_id" integer,
-                          "document_type_id" integer NOT NULL,
+                          "nationality_alpha_2_code" char(2),
+                          "document_type_code" text NOT NULL,
                           "document_number" text NOT NULL,
                           "phone_number" text,
                           "address_id" integer,
                           "clerk_id" text UNIQUE,
                           "created_at" timestamp with time zone DEFAULT now(),
                           "updated_at" timestamp with time zone DEFAULT now(),
-                          CONSTRAINT "person_document_type_id_document_number_key" UNIQUE("document_type_id","document_number")
+                          CONSTRAINT "person_document_type_code_document_number_key" UNIQUE("document_type_code","document_number")
 );
 
-ALTER TABLE "address" ADD CONSTRAINT "address_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "public"."country"("id") ON DELETE restrict ON UPDATE no action;
-ALTER TABLE "person" ADD CONSTRAINT "person_gender_id_fkey" FOREIGN KEY ("gender_id") REFERENCES "public"."gender"("id") ON DELETE restrict ON UPDATE no action;
-ALTER TABLE "person" ADD CONSTRAINT "person_nationality_id_fkey" FOREIGN KEY ("nationality_id") REFERENCES "public"."country"("id") ON DELETE set null ON UPDATE no action;
-ALTER TABLE "person" ADD CONSTRAINT "person_document_type_id_fkey" FOREIGN KEY ("document_type_id") REFERENCES "public"."document_type"("id") ON DELETE restrict ON UPDATE no action;
+ALTER TABLE "address" ADD CONSTRAINT "address_country_alpha_2_code_fkey" FOREIGN KEY ("country_alpha_2_code") REFERENCES "public"."country"("alpha_2_code") ON DELETE restrict ON UPDATE no action;
+ALTER TABLE "person" ADD CONSTRAINT "person_gender_code_fkey" FOREIGN KEY ("gender_code") REFERENCES "public"."gender"("code") ON DELETE restrict ON UPDATE no action;
+ALTER TABLE "person" ADD CONSTRAINT "person_nationality_alpha_2_code_fkey" FOREIGN KEY ("nationality_alpha_2_code") REFERENCES "public"."country"("alpha_2_code") ON DELETE set null ON UPDATE no action;
+ALTER TABLE "person" ADD CONSTRAINT "person_document_type_code_fkey" FOREIGN KEY ("document_type_code") REFERENCES "public"."document_type"("code") ON DELETE restrict ON UPDATE no action;
 ALTER TABLE "person" ADD CONSTRAINT "person_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "public"."address"("id") ON DELETE set null ON UPDATE no action;
 ALTER TABLE "person" ADD CONSTRAINT "person_clerk_id_fkey" FOREIGN KEY ("clerk_id") REFERENCES "public"."clerk_user"("clerk_id") ON DELETE set null ON UPDATE no action;
 
