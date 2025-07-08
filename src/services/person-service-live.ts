@@ -4,6 +4,7 @@ import { PersonServiceTag } from "@/services/person-service-tag";
 import { PersonRepositoryTag } from "@/repositories/person-repository-tag";
 import { ClerkServiceTag } from "@/services/clerk-service-tag";
 import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-found-error";
+import { ClerkUserDoesNotHaveEmailAddress } from "@/errors/clerk-user-does-not-have-email-address";
 
 export const PersonServiceLive = Layer.effect(
   PersonServiceTag,
@@ -20,10 +21,15 @@ export const PersonServiceLive = Layer.effect(
             return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
           }
 
+          const email = user.primaryEmailAddress?.emailAddress;
+          if (!email) {
+            return yield* Effect.fail(new ClerkUserDoesNotHaveEmailAddress());
+          }
+
           const clerkUserData = {
             clerkId: user.id,
             imageUrl: user.imageUrl,
-            email: user.primaryEmailAddress?.emailAddress ?? "",
+            email: email,
           };
 
           const { address, ...personData } = onboardData;

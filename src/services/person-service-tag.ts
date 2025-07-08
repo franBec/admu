@@ -5,6 +5,7 @@ import { DatabaseQueryError } from "@/errors/database-query-error";
 import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-found-error";
 import { ClerkNextjsServerError } from "@/errors/clerk-nextjs-server-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
+import { ClerkUserDoesNotHaveEmailAddress } from "@/errors/clerk-user-does-not-have-email-address";
 
 export class PersonServiceTag extends Context.Tag("PersonServiceTag")<
   PersonServiceTag,
@@ -17,6 +18,7 @@ export class PersonServiceTag extends Context.Tag("PersonServiceTag")<
       | PersonConstraintViolationError
       | ClerkCurrentUserNotFoundError
       | ClerkNextjsServerError
+      | ClerkUserDoesNotHaveEmailAddress
     >;
   }
 >() {}
