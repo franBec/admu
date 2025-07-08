@@ -196,7 +196,7 @@ export function OnboardingForm({
               <FormItem>
                 <FormLabel>Phone Number (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="+1 123 456 7890" type="tel" {...field} />
+                  <Input placeholder="+1 123 456 7890" type="tel" {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -378,7 +378,7 @@ export function OnboardingForm({
               <FormItem>
                 <FormLabel>Number (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="123" {...field} />
+                  <Input placeholder="123" {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -391,7 +391,7 @@ export function OnboardingForm({
               <FormItem>
                 <FormLabel>Floor (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="2nd" {...field} />
+                  <Input placeholder="2nd" {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -404,7 +404,7 @@ export function OnboardingForm({
               <FormItem>
                 <FormLabel>Apartment (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Apt 4B" {...field} />
+                  <Input placeholder="Apt 4B" {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
