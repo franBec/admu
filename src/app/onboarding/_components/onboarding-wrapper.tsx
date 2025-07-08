@@ -39,10 +39,10 @@ export function OnboardingWrapper({
       genders={genders}
       documentTypes={documentTypes}
       initialUserData={{
-        givenName: user?.firstName || "",
-        familyName: user?.lastName || "",
-        email: user?.emailAddresses?.[0]?.emailAddress || "",
-        phoneNumber: user?.phoneNumbers?.[0]?.phoneNumber || "",
+        givenName: user?.firstName,
+        familyName: user?.lastName,
+        email: user?.emailAddresses?.[0]?.emailAddress,
+        phoneNumber: user?.phoneNumbers?.[0]?.phoneNumber,
       }}
     />
   );

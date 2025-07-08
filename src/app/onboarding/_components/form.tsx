@@ -55,10 +55,10 @@ interface OnboardingFormProps {
     name: string;
   }[];
   initialUserData: {
-    givenName: string;
-    familyName: string;
-    email: string;
-    phoneNumber: string;
+    givenName: string | null | undefined;
+    familyName: string | null | undefined;
+    email: string | undefined;
+    phoneNumber: string | undefined;
   };
 }
 
@@ -88,23 +88,23 @@ export function OnboardingForm({
   const form = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingFormSchema),
     defaultValues: {
-      givenName: initialUserData.givenName,
-      familyName: initialUserData.familyName,
+      givenName: initialUserData.givenName || "",
+      familyName: initialUserData.familyName || "",
       email: initialUserData.email,
       genderCode: undefined,
       birthDate: new Date("2000-01-01"),
       nationalityAlpha2Code: undefined,
       documentTypeCode: undefined,
-      documentNumber: undefined,
+      documentNumber: "",
       phoneNumber: initialUserData.phoneNumber,
       address: {
-        street: undefined,
-        number: undefined,
-        floor: undefined,
-        apartment: undefined,
-        city: undefined,
-        postalCode: undefined,
-        province: undefined,
+        street: "",
+        number: "",
+        floor: "",
+        apartment: "",
+        city: "",
+        postalCode: "",
+        province: "",
         countryAlpha2Code: undefined,
       },
     },
@@ -356,12 +356,7 @@ export function OnboardingForm({
           />
         </div>
 
-        <h3 className="text-xl font-semibold mt-8 mb-4">
-          Address Information (Optional)
-        </h3>
-        <p className="text-sm text-muted-foreground -mt-3 mb-4">
-          You can provide your address now or later.
-        </p>
+        <h3 className="text-xl font-semibold mt-8 mb-4">Address Information</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <FormField
             control={form.control}
