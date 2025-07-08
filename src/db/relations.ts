@@ -1,5 +1,18 @@
 import { relations } from "drizzle-orm/relations";
-import { gender, person, country, documentType, address, clerkUser } from "./schema";
+import { country, address, gender, person, documentType, clerkUser } from "./schema";
+
+export const addressRelations = relations(address, ({one, many}) => ({
+	country: one(country, {
+		fields: [address.countryAlpha2Code],
+		references: [country.alpha2Code]
+	}),
+	people: many(person),
+}));
+
+export const countryRelations = relations(country, ({many}) => ({
+	addresses: many(address),
+	people: many(person),
+}));
 
 export const personRelations = relations(person, ({one}) => ({
 	gender: one(gender, {
@@ -28,21 +41,8 @@ export const genderRelations = relations(gender, ({many}) => ({
 	people: many(person),
 }));
 
-export const countryRelations = relations(country, ({many}) => ({
-	people: many(person),
-	addresses: many(address),
-}));
-
 export const documentTypeRelations = relations(documentType, ({many}) => ({
 	people: many(person),
-}));
-
-export const addressRelations = relations(address, ({one, many}) => ({
-	people: many(person),
-	country: one(country, {
-		fields: [address.countryAlpha2Code],
-		references: [country.alpha2Code]
-	}),
 }));
 
 export const clerkUserRelations = relations(clerkUser, ({many}) => ({

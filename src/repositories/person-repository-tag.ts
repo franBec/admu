@@ -6,7 +6,7 @@ import { PersonConstraintViolationError } from "@/errors/person-constraint-viola
 
 export type PersonOnboardData = Omit<
   typeof person.$inferInsert,
-  "id" | "fullName" | "createdAt" | "updatedAt"
+  "id" | "fullName" | "createdAt" | "updatedAt" | "addressId" | "clerkId"
 >;
 
 export type AddressOnboardData = Omit<
