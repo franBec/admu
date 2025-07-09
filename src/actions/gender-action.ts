@@ -6,7 +6,6 @@ import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import { GenderRepositoryLive } from "@/repositories/gender-repository-live";
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import { defaultError } from "@/utils/error-handling";
-
 import { headers } from "next/headers";
 
 export async function fetchGenders() {
@@ -14,13 +13,12 @@ export async function fetchGenders() {
   const traceId = headersList.get("x-trace-id");
   const requestUrl = headersList.get("x-request-url");
 
-  const program = Effect.gen(function* () {
-    yield* Effect.log();
-    const genderRepository = yield* GenderRepositoryTag;
-    const result = yield* genderRepository.findAll();
-    yield* Effect.log(result);
-    return result;
-  }).pipe(
+  const program = Effect.log().pipe(
+    Effect.andThen(() =>
+      Effect.gen(function* () {
+        return yield* (yield* GenderRepositoryTag).findAll();
+      })
+    ),
     defaultError,
     Effect.provide(GenderRepositoryLive),
     Effect.provide(DrizzleServiceLive),

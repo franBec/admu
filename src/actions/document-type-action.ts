@@ -4,7 +4,6 @@ import * as Effect from "effect/Effect";
 import { DocumentTypeRepositoryTag } from "@/repositories/document-type-repository-tag";
 import { DocumentTypeRepositoryLive } from "@/repositories/document-type-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
-
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import { defaultError } from "@/utils/error-handling";
 
@@ -15,13 +14,13 @@ export async function fetchDocumentTypes() {
   const traceId = headersList.get("x-trace-id");
   const requestUrl = headersList.get("x-request-url");
 
-  const program = Effect.gen(function* () {
-    yield* Effect.log();
-    const documentTypeRepository = yield* DocumentTypeRepositoryTag;
-    const result = yield* documentTypeRepository.findAll();
-    yield* Effect.log(result);
-    return result;
-  }).pipe(
+  const program = Effect.log().pipe(
+    Effect.andThen(() =>
+      Effect.gen(function* () {
+        return yield* (yield* DocumentTypeRepositoryTag).findAll();
+      })
+    ),
+    Effect.tap(response => Effect.log(response)),
     defaultError,
     Effect.provide(DocumentTypeRepositoryLive),
     Effect.provide(DrizzleServiceLive),

@@ -23,25 +23,26 @@ export async function onboardPerson(values: OnboardingFormValues) {
   const traceId = headersList.get("x-trace-id");
   const requestUrl = headersList.get("x-request-url");
 
-  const program = Effect.gen(function* () {
-    yield* Effect.log(values);
-    const parsedValues = yield* Effect.try({
-      try: () => onboardingFormSchema.parse(values),
-      catch: e => {
-        if (e instanceof z.ZodError) {
-          return new ZodValidationError({
-            message: `Invalid input: ${e.errors.map(err => err.message).join(", ")}`,
-          });
-        }
-        return new ZodUnknownError({ e });
-      },
-    });
+  const program = Effect.log().pipe(
+    Effect.andThen(() =>
+      Effect.gen(function* () {
+        const parsedValues = yield* Effect.try({
+          try: () => onboardingFormSchema.parse(values),
+          catch: e => {
+            if (e instanceof z.ZodError) {
+              return new ZodValidationError({
+                message: `Invalid input: ${e.errors.map(err => err.message).join(", ")}`,
+              });
+            }
+            return new ZodUnknownError({ e });
+          },
+        });
 
-    const personService = yield* PersonServiceTag;
-    yield* personService.onboardPerson(parsedValues);
-    yield* Effect.log();
-    return;
-  }).pipe(
+        yield* (yield* PersonServiceTag).onboardPerson(parsedValues);
+        return;
+      })
+    ),
+    Effect.tap(() => Effect.log()),
     Effect.catchTag("ZodValidationError", _ZodValidationError =>
       handleError(_ZodValidationError, 400)
     ),
