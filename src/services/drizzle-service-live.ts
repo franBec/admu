@@ -12,35 +12,42 @@ const fullSchema = { ...schema, ...relations };
 
 export const DrizzleServiceLive = Layer.scoped(
   DrizzleServiceTag,
-  Effect.gen(function* () {
-    const databaseUrl = process.env.DATABASE_URL;
+  Effect.succeed(process.env.DATABASE_URL).pipe(
+    Effect.flatMap(databaseUrl => {
+      if (!databaseUrl) {
+        return Effect.die(new Error("DATABASE_URL is not set."));
+      }
 
-    if (!databaseUrl) {
-      yield* Effect.die(new Error("DATABASE_URL is not set."));
-    }
+      const pool = new Pool({ connectionString: databaseUrl });
 
-    const pool = new Pool({ connectionString: databaseUrl });
-
-    yield* Effect.addFinalizer(() =>
-      Effect.log("Closing database connection pool.").pipe(
-        Effect.flatMap(() => Effect.promise(() => pool.end()))
-      )
-    );
-
-    yield* Effect.tryPromise({
-      try: async () => {
-        const client = await pool.connect();
-        client.release();
-      },
-      catch: e => new DatabasePoolError({ e }),
-    });
-
-    const db = drizzle(pool, {
-      schema: fullSchema,
-    });
-
-    yield* Effect.log("Database connection established and client created.");
-
-    return { db };
-  })
+      return Effect.addFinalizer(() =>
+        Effect.log("Closing database connection pool.").pipe(
+          Effect.flatMap(() => Effect.promise(() => pool.end()))
+        )
+      ).pipe(
+        Effect.flatMap(() =>
+          Effect.tryPromise({
+            try: async () => {
+              const client = await pool.connect();
+              client.release();
+            },
+            catch: e => new DatabasePoolError({ e }),
+          })
+        ),
+        Effect.flatMap(() => {
+          const db = drizzle(pool, {
+            schema: fullSchema,
+          });
+          return Effect.log(
+            "Database connection established and client created."
+          ).pipe(
+            Effect.map(() => ({ db })),
+            Effect.withLogSpan(
+              "src/services/drizzle-service-live.ts>DrizzleServiceLive"
+            )
+          );
+        })
+      );
+    })
+  )
 );
