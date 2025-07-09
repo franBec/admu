@@ -7,11 +7,12 @@ import { GenderRepositoryLive } from "@/repositories/gender-repository-live";
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import { defaultError } from "@/utils/error-handling";
 import { headers } from "next/headers";
+import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
 export async function fetchGenders() {
   const headersList = await headers();
-  const traceId = headersList.get("x-trace-id");
-  const requestUrl = headersList.get("x-request-url");
+  const traceId = headersList.get(HEADER_TRACE_ID);
+  const requestUrl = headersList.get(HEADER_REQUEST_URL);
 
   const program = Effect.log().pipe(
     Effect.andThen(() => GenderRepositoryTag),

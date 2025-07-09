@@ -37,6 +37,7 @@ import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onboardPerson } from "@/actions/person-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
+import { UNEXPECTED_ERROR } from "@/utils/constants";
 
 interface OnboardingFormProps {
   countries: readonly {
@@ -126,7 +127,7 @@ export function OnboardingForm({
         .catch(() => {
           setError({
             status: 500,
-            detail: "An unexpected error occurred. Please try again later.",
+            detail: UNEXPECTED_ERROR,
             timestamp: new Date().toISOString(),
             instance: null,
             trace: null,

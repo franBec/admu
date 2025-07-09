@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
+import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher([
@@ -15,8 +16,8 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const hasCompletedOnboarding = sessionClaims?.metadata?.onboardingComplete;
 
   const requestHeaders = new Headers(req.headers);
-  requestHeaders.set("x-trace-id", uuidv4());
-  requestHeaders.set("x-request-url", req.url);
+  requestHeaders.set(HEADER_TRACE_ID, uuidv4());
+  requestHeaders.set(HEADER_REQUEST_URL, req.url);
 
   const nextWithHeaders = NextResponse.next({
     request: {

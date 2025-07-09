@@ -17,11 +17,12 @@ import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import { defaultError, handleError } from "@/utils/error-handling";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
+import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
 export async function onboardPerson(values: OnboardingFormValues) {
   const headersList = await headers();
-  const traceId = headersList.get("x-trace-id");
-  const requestUrl = headersList.get("x-request-url");
+  const traceId = headersList.get(HEADER_TRACE_ID);
+  const requestUrl = headersList.get(HEADER_REQUEST_URL);
 
   const program = Effect.log().pipe(
     Effect.andThen(() =>
