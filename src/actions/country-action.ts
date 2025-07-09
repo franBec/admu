@@ -4,9 +4,9 @@ import * as Effect from "effect/Effect";
 import { CountryRepositoryTag } from "@/repositories/country-repository-tag";
 import { CountryRepositoryLive } from "@/repositories/country-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
-import * as FiberRef from "effect/FiberRef";
+
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
-import { handle } from "@/utils/error-handler";
+import { defaultError } from "@/utils/error-handling";
 
 import { headers } from "next/headers";
 
@@ -22,18 +22,7 @@ export async function fetchCountries() {
     yield* Effect.log(result);
     return result;
   }).pipe(
-    Effect.catchAll(e =>
-      Effect.gen(function* (_) {
-        const traceId = yield* _(FiberRef.get(currentTraceId));
-        const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(e);
-
-        return handle(e, 500, {
-          requestUrl,
-          traceId,
-        });
-      })
-    ),
+    defaultError,
     Effect.provide(CountryRepositoryLive),
     Effect.provide(DrizzleServiceLive),
     Effect.locally(currentTraceId, traceId),

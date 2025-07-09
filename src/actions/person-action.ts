@@ -1,7 +1,7 @@
 "use server";
 
 import * as Effect from "effect/Effect";
-import * as FiberRef from "effect/FiberRef";
+
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import {
   onboardingFormSchema,
@@ -14,7 +14,7 @@ import { PersonServiceTag } from "@/services/person-service-tag";
 import { PersonServiceLive } from "@/services/person-service-live";
 import { PersonRepositoryLive } from "@/repositories/person-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
-import { handle } from "@/utils/error-handler";
+import { defaultError, handleError } from "@/utils/error-handling";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
 
@@ -43,42 +43,14 @@ export async function onboardPerson(values: OnboardingFormValues) {
     return;
   }).pipe(
     Effect.catchTag("ZodValidationError", _ZodValidationError =>
-      Effect.gen(function* (_) {
-        const traceId = yield* _(FiberRef.get(currentTraceId));
-        const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(_ZodValidationError);
-
-        return handle(_ZodValidationError, 400, {
-          requestUrl,
-          traceId,
-        });
-      })
+      handleError(_ZodValidationError, 400)
     ),
     Effect.catchTag(
       "PersonConstraintViolationError",
       _PersonConstraintViolationError =>
-        Effect.gen(function* (_) {
-          const traceId = yield* _(FiberRef.get(currentTraceId));
-          const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-          yield* Effect.logError(_PersonConstraintViolationError);
-
-          return handle(_PersonConstraintViolationError, 409, {
-            requestUrl,
-            traceId,
-          });
-        })
+        handleError(_PersonConstraintViolationError, 409)
     ),
-    Effect.catchAll(e =>
-      Effect.gen(function* (_) {
-        const traceId = yield* _(FiberRef.get(currentTraceId));
-        const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(e);
-        return handle(e, 500, {
-          requestUrl,
-          traceId,
-        });
-      })
-    ),
+    defaultError,
     Effect.provide(PersonServiceLive),
     Effect.provide(ClerkServiceLive),
     Effect.provide(PersonRepositoryLive),
