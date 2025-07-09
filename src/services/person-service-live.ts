@@ -14,41 +14,52 @@ export const PersonServiceLive = Layer.effect(
 
     return {
       onboardPerson: onboardData =>
-        Effect.gen(function* () {
-          const user = yield* clerkService.getCurrentUser();
+        Effect.log(onboardData).pipe(
+          Effect.andThen(() =>
+            Effect.gen(function* () {
+              const user = yield* clerkService.getCurrentUser();
 
-          if (!user) {
-            return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
-          }
+              if (!user) {
+                return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
+              }
 
-          const email = user.primaryEmailAddress?.emailAddress;
-          if (!email) {
-            return yield* Effect.fail(new ClerkUserDoesNotHaveEmailAddress());
-          }
+              const email = user.primaryEmailAddress?.emailAddress;
+              if (!email) {
+                return yield* Effect.fail(
+                  new ClerkUserDoesNotHaveEmailAddress()
+                );
+              }
 
-          const clerkUserData = {
-            clerkId: user.id,
-            imageUrl: user.imageUrl,
-            email: email,
-          };
+              const clerkUserData = {
+                clerkId: user.id,
+                imageUrl: user.imageUrl,
+                email: email,
+              };
 
-          const { address, ...personData } = onboardData;
+              const { address, ...personData } = onboardData;
 
-          const person = yield* personRepository.onboardPerson(
-            {
-              ...personData,
-              birthDate: personData.birthDate.toISOString().split("T")[0],
-            },
-            clerkUserData,
-            address
-          );
+              const person = yield* personRepository.onboardPerson(
+                {
+                  ...personData,
+                  birthDate: personData.birthDate.toISOString().split("T")[0],
+                },
+                clerkUserData,
+                address
+              );
 
-          yield* clerkService.updateUserPublicMetadata(user.id, {
-            onboardingComplete: true,
-          });
+              yield* clerkService.updateUserPublicMetadata(user.id, {
+                onboardingComplete: true,
+              });
 
-          return person;
-        }),
+              return person;
+            })
+          ),
+          Effect.tap(response => Effect.log(response)),
+          Effect.tapError(e => Effect.logError(e)),
+          Effect.withLogSpan(
+            "src/services/person-service-live.ts>PersonServiceLive>onboardPerson()"
+          )
+        ),
     };
   })
 );

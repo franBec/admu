@@ -14,7 +14,7 @@ export const PersonRepositoryLive = Layer.effect(
 
     return {
       onboardPerson: (personData, clerkUserData, addressData) =>
-        Effect.log({ personData, clerkUserData, addressData }).pipe(
+        Effect.log(personData, clerkUserData, addressData).pipe(
           Effect.andThen(() =>
             Effect.tryPromise<
               {

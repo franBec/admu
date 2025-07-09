@@ -10,26 +10,44 @@ export const ClerkServiceLive = Layer.effect(
   Effect.gen(function* () {
     return {
       getCurrentUser: () =>
-        Effect.gen(function* () {
-          const user = yield* Effect.tryPromise({
-            try: () => currentUser(),
-            catch: e => new ClerkNextjsServerError({ e }),
-          });
-          if (user === null) {
-            return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
-          }
-          return user;
-        }),
+        Effect.log().pipe(
+          Effect.andThen(() =>
+            Effect.gen(function* () {
+              const user = yield* Effect.tryPromise({
+                try: () => currentUser(),
+                catch: e => new ClerkNextjsServerError({ e }),
+              });
+              if (user === null) {
+                return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
+              }
+              return user;
+            })
+          ),
+          Effect.tap(response => Effect.log(response)),
+          Effect.tapError(e => Effect.logError(e)),
+          Effect.withLogSpan(
+            "src/services/clerk-service-live.ts>ClerkServiceLive>getCurrentUser()"
+          )
+        ),
       updateUserPublicMetadata: (userId, metadata) =>
-        Effect.tryPromise({
-          try: async () => {
-            const client = await clerkClient();
-            await client.users.updateUser(userId, {
-              publicMetadata: metadata,
-            });
-          },
-          catch: e => new ClerkNextjsServerError({ e }),
-        }),
+        Effect.log(userId, metadata).pipe(
+          Effect.andThen(() =>
+            Effect.tryPromise({
+              try: async () => {
+                const client = await clerkClient();
+                await client.users.updateUser(userId, {
+                  publicMetadata: metadata,
+                });
+              },
+              catch: e => new ClerkNextjsServerError({ e }),
+            })
+          ),
+          Effect.tap(() => Effect.log()),
+          Effect.tapError(e => Effect.logError(e)),
+          Effect.withLogSpan(
+            "src/services/clerk-service-live.ts>ClerkServiceLive>updateUserPublicMetadata()"
+          )
+        ),
     };
   })
 );

@@ -22,7 +22,7 @@ export const DrizzleServiceLive = Layer.scoped(
     const pool = new Pool({ connectionString: databaseUrl });
 
     yield* Effect.addFinalizer(() =>
-      Effect.log("DrizzleServiceLive: Closing database connection pool.").pipe(
+      Effect.log("Closing database connection pool.").pipe(
         Effect.flatMap(() => Effect.promise(() => pool.end()))
       )
     );
@@ -39,9 +39,7 @@ export const DrizzleServiceLive = Layer.scoped(
       schema: fullSchema,
     });
 
-    yield* Effect.log(
-      "DrizzleServiceLive: Database connection established and client created."
-    );
+    yield* Effect.log("Database connection established and client created.");
 
     return { db };
   })
