@@ -57,7 +57,9 @@ export async function onboardPerson(values: OnboardingFormValues) {
     Effect.provide(DrizzleServiceLive),
     Effect.locally(currentTraceId, traceId),
     Effect.locally(currentRequestUrl, requestUrl),
-    Effect.withLogSpan("src/actions/person-actions.ts>onboardPerson()")
+    Effect.annotateLogs("traceId", traceId),
+    Effect.annotateLogs("requestUrl", requestUrl),
+    Effect.withLogSpan("src/actions/person-action.ts>onboardPerson()")
   );
 
   return Effect.runPromise(program);

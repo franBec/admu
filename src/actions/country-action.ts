@@ -27,6 +27,8 @@ export async function fetchCountries() {
     Effect.provide(DrizzleServiceLive),
     Effect.locally(currentTraceId, traceId),
     Effect.locally(currentRequestUrl, requestUrl),
+    Effect.annotateLogs("traceId", traceId),
+    Effect.annotateLogs("requestUrl", requestUrl),
     Effect.withLogSpan("src/actions/country-action.ts>fetchCountries()")
   );
 
