@@ -15,7 +15,7 @@ export const PersonServiceLive = Layer.effect(
     return {
       onboardPerson: onboardData =>
         Effect.gen(function* () {
-          const user = yield* clerkService.getCurrentUser;
+          const user = yield* clerkService.getCurrentUser();
 
           if (!user) {
             return yield* Effect.fail(new ClerkCurrentUserNotFoundError());

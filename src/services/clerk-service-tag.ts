@@ -7,7 +7,7 @@ import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-f
 export class ClerkServiceTag extends Context.Tag("@services/ClerkService")<
   ClerkServiceTag,
   {
-    readonly getCurrentUser: Effect.Effect<
+    readonly getCurrentUser: () => Effect.Effect<
       User,
       ClerkNextjsServerError | ClerkCurrentUserNotFoundError
     >;

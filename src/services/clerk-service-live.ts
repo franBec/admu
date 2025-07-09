@@ -9,16 +9,17 @@ export const ClerkServiceLive = Layer.effect(
   ClerkServiceTag,
   Effect.gen(function* () {
     return {
-      getCurrentUser: Effect.gen(function* () {
-        const user = yield* Effect.tryPromise({
-          try: () => currentUser(),
-          catch: e => new ClerkNextjsServerError({ e }),
-        });
-        if (user === null) {
-          return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
-        }
-        return user;
-      }),
+      getCurrentUser: () =>
+        Effect.gen(function* () {
+          const user = yield* Effect.tryPromise({
+            try: () => currentUser(),
+            catch: e => new ClerkNextjsServerError({ e }),
+          });
+          if (user === null) {
+            return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
+          }
+          return user;
+        }),
       updateUserPublicMetadata: (userId, metadata) =>
         Effect.tryPromise({
           try: async () => {
