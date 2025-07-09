@@ -4,6 +4,33 @@ import { fetchGenders } from "@/actions/gender-action";
 import { fetchDocumentTypes } from "@/actions/document-type-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
 
+interface ProblemDetails {
+  detail: string;
+  title: string;
+  status: number;
+  instance: string | null;
+  timestamp: string;
+  trace: string | null;
+}
+
+interface Country {
+  id: number;
+  alpha2Code: string;
+  name: string;
+}
+
+interface Gender {
+  id: number;
+  code: string;
+  name: string;
+}
+
+interface DocumentType {
+  id: number;
+  code: string;
+  name: string;
+}
+
 const Page = async () => {
   const [countries, genders, documentTypes] = await Promise.all([
     fetchCountries(),
@@ -14,15 +41,15 @@ const Page = async () => {
   const errors = [];
 
   if (!Array.isArray(countries)) {
-    errors.push(countries as any);
+    errors.push(countries as ProblemDetails);
   }
 
   if (!Array.isArray(genders)) {
-    errors.push(genders as any);
+    errors.push(genders as ProblemDetails);
   }
 
   if (!Array.isArray(documentTypes)) {
-    errors.push(documentTypes as any);
+    errors.push(documentTypes as ProblemDetails);
   }
 
   if (errors.length) {
@@ -31,11 +58,11 @@ const Page = async () => {
         {errors.map((error, i) => (
           <ProblemDetailsAlert
             key={i}
-            status={error.status as number}
-            instance={error.instance as string | null}
-            timestamp={error.timestamp as string}
-            trace={error.trace as string | null}
-            detail={error.detail as string}
+            status={error.status}
+            instance={error.instance}
+            timestamp={error.timestamp}
+            trace={error.trace}
+            detail={error.detail}
           />
         ))}
       </div>
@@ -45,9 +72,9 @@ const Page = async () => {
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-4">
       <OnboardingWrapper
-        countries={countries as any}
-        genders={genders as any}
-        documentTypes={documentTypes as any}
+        countries={countries as Country[]}
+        genders={genders as Gender[]}
+        documentTypes={documentTypes as DocumentType[]}
       />
     </div>
   );

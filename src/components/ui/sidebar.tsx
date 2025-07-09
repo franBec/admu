@@ -98,8 +98,6 @@ function SidebarProvider({
       }
     } catch (error) {
       console.error("Failed to read sidebar cookie:", error);
-      // Fallback to defaultOpen if there's an error reading cookie
-      _setOpen(defaultOpen);
     }
 
     setIsMounted(true); // Indicate that the component has fully mounted on the client

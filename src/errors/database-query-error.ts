@@ -8,7 +8,7 @@ export class DatabaseQueryError extends Data.TaggedError("DatabaseQueryError")<{
   constructor(props: { e: unknown; message?: string }) {
     super(props);
     if (!props.message) {
-      this.message = (props.e as any).cause?.detail || UNEXPECTED_ERROR;
+      this.message = (props.e as { cause?: { detail?: string } }).cause?.detail || UNEXPECTED_ERROR;
     }
   }
 }

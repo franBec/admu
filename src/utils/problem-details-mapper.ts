@@ -3,8 +3,8 @@ import { ZodValidationError } from "@/errors/zod-validation-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { UNEXPECTED_ERROR } from "@/utils/constants";
 
-// @ts-ignore
-export const mapToProblemDetails = <T extends Data.TaggedError<any>>(
+// @ts-expect-error: This is a generic error handler, and the exact type of 'e' can vary. We are only interested in the '_tag' property.
+export const mapToProblemDetails = <T extends Data.TaggedError<string, { message?: string }>>(
   e: T,
   status: number,
   requestContext: { requestUrl: string | null; traceId: string | null }
