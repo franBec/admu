@@ -6,7 +6,7 @@ import { DocumentTypeRepositoryLive } from "@/repositories/document-type-reposit
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import * as FiberRef from "effect/FiberRef";
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
-import { mapToProblemDetails } from "@/utils/problem-details-mapper";
+import { handle } from "@/utils/error-handler";
 
 import { headers } from "next/headers";
 
@@ -28,7 +28,7 @@ export async function fetchDocumentTypes() {
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
         yield* Effect.logError(e);
 
-        return mapToProblemDetails(e, 500, {
+        return handle(e, 500, {
           requestUrl,
           traceId,
         });

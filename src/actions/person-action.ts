@@ -14,7 +14,7 @@ import { PersonServiceTag } from "@/services/person-service-tag";
 import { PersonServiceLive } from "@/services/person-service-live";
 import { PersonRepositoryLive } from "@/repositories/person-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
-import { mapToProblemDetails } from "@/utils/problem-details-mapper";
+import { handle } from "@/utils/error-handler";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
 
@@ -48,7 +48,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
         yield* Effect.logError(_ZodValidationError);
 
-        return mapToProblemDetails(_ZodValidationError, 400, {
+        return handle(_ZodValidationError, 400, {
           requestUrl,
           traceId,
         });
@@ -62,7 +62,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
           const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
           yield* Effect.logError(_PersonConstraintViolationError);
 
-          return mapToProblemDetails(_PersonConstraintViolationError, 409, {
+          return handle(_PersonConstraintViolationError, 409, {
             requestUrl,
             traceId,
           });
@@ -73,7 +73,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
         const traceId = yield* _(FiberRef.get(currentTraceId));
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
         yield* Effect.logError(e);
-        return mapToProblemDetails(e, 500, {
+        return handle(e, 500, {
           requestUrl,
           traceId,
         });

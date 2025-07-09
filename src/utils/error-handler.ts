@@ -4,7 +4,9 @@ import { PersonConstraintViolationError } from "@/errors/person-constraint-viola
 import { UNEXPECTED_ERROR } from "@/utils/constants";
 
 // @ts-expect-error: This is a generic error handler, and the exact type of 'e' can vary. We are only interested in the '_tag' property.
-export const mapToProblemDetails = <T extends Data.TaggedError<string, { message?: string }>>(
+export const handle = <
+  T extends Data.TaggedError<string, { message?: string }>,
+>(
   e: T,
   status: number,
   requestContext: { requestUrl: string | null; traceId: string | null }
