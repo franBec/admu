@@ -72,7 +72,7 @@ export const PersonRepositoryLive = Layer.effect(
             catch: e => {
               if (
                 (e as any).cause?.constraint ===
-                "person_document_type_id_document_number_key"
+                "person_document_type_code_document_number_key"
               ) {
                 return new PersonConstraintViolationError({
                   message:
