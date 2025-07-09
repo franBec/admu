@@ -10,7 +10,7 @@ import { DatabasePoolError } from "@/errors/database-pool-error";
 
 const fullSchema = { ...schema, ...relations };
 
-export const DrizzleServiceLive = Layer.effect(
+export const DrizzleServiceLive = Layer.scoped(
   DrizzleServiceTag,
   Effect.gen(function* () {
     const databaseUrl = process.env.DATABASE_URL;
@@ -20,6 +20,12 @@ export const DrizzleServiceLive = Layer.effect(
     }
 
     const pool = new Pool({ connectionString: databaseUrl });
+
+    yield* Effect.addFinalizer(() =>
+      Effect.log("DrizzleServiceLive: Closing database connection pool.").pipe(
+        Effect.flatMap(() => Effect.promise(() => pool.end()))
+      )
+    );
 
     yield* Effect.tryPromise({
       try: async () => {
@@ -33,7 +39,7 @@ export const DrizzleServiceLive = Layer.effect(
       schema: fullSchema,
     });
 
-    console.log(
+    yield* Effect.log(
       "DrizzleServiceLive: Database connection established and client created."
     );
 
