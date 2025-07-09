@@ -28,7 +28,7 @@ export async function fetchDocumentTypes() {
     Effect.locally(currentTraceId, traceId),
     Effect.locally(currentRequestUrl, requestUrl),
     Effect.withLogSpan(
-      "src/actions/document-type-actions.ts>fetchDocumentTypes()"
+      "src/actions/document-type-action.ts>fetchDocumentTypes()"
     )
   );
 
