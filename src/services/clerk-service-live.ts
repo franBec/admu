@@ -18,7 +18,9 @@ export const ClerkServiceLive = Layer.effect(
                 catch: e => new ClerkNextjsServerError({ e }),
               });
               if (user === null) {
-                return yield* Effect.fail(new ClerkCurrentUserNotFoundError());
+                return yield* Effect.fail(
+                  new ClerkCurrentUserNotFoundError({})
+                );
               }
               return user;
             })
