@@ -15,11 +15,8 @@ export async function fetchDocumentTypes() {
   const requestUrl = headersList.get("x-request-url");
 
   const program = Effect.log().pipe(
-    Effect.andThen(() =>
-      Effect.gen(function* () {
-        return yield* (yield* DocumentTypeRepositoryTag).findAll();
-      })
-    ),
+    Effect.andThen(() => DocumentTypeRepositoryTag),
+    Effect.andThen(documentTypeRepository => documentTypeRepository.findAll()),
     Effect.tap(response => Effect.log(response)),
     defaultError,
     Effect.provide(DocumentTypeRepositoryLive),

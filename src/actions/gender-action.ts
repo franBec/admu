@@ -14,11 +14,8 @@ export async function fetchGenders() {
   const requestUrl = headersList.get("x-request-url");
 
   const program = Effect.log().pipe(
-    Effect.andThen(() =>
-      Effect.gen(function* () {
-        return yield* (yield* GenderRepositoryTag).findAll();
-      })
-    ),
+    Effect.andThen(() => GenderRepositoryTag),
+    Effect.andThen(genderRepository => genderRepository.findAll()),
     defaultError,
     Effect.provide(GenderRepositoryLive),
     Effect.provide(DrizzleServiceLive),

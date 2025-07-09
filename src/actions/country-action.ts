@@ -14,11 +14,8 @@ export async function fetchCountries() {
   const requestUrl = headersList.get("x-request-url");
 
   const program = Effect.log().pipe(
-    Effect.andThen(() =>
-      Effect.gen(function* () {
-        return yield* (yield* CountryRepositoryTag).findAll();
-      })
-    ),
+    Effect.andThen(() => CountryRepositoryTag),
+    Effect.andThen(countryRepository => countryRepository.findAll()),
     Effect.tap(response => Effect.log(response)),
     defaultError,
     Effect.provide(CountryRepositoryLive),
