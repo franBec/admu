@@ -32,16 +32,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "gender_code_key": {
-          "columns": [
-            "code"
-          ],
+          "columns": ["code"],
           "nullsNotDistinct": false,
           "name": "gender_code_key"
         },
         "gender_name_key": {
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "nullsNotDistinct": false,
           "name": "gender_name_key"
         }
@@ -78,16 +74,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "country_alpha_2_code_key": {
-          "columns": [
-            "alpha_2_code"
-          ],
+          "columns": ["alpha_2_code"],
           "nullsNotDistinct": false,
           "name": "country_alpha_2_code_key"
         },
         "country_name_key": {
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "nullsNotDistinct": false,
           "name": "country_name_key"
         }
@@ -176,12 +168,8 @@
           "tableFrom": "address",
           "tableTo": "country",
           "schemaTo": "public",
-          "columnsFrom": [
-            "country_alpha_2_code"
-          ],
-          "columnsTo": [
-            "alpha_2_code"
-          ],
+          "columnsFrom": ["country_alpha_2_code"],
+          "columnsTo": ["alpha_2_code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -294,12 +282,8 @@
           "tableFrom": "person",
           "tableTo": "gender",
           "schemaTo": "public",
-          "columnsFrom": [
-            "gender_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["gender_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -308,12 +292,8 @@
           "tableFrom": "person",
           "tableTo": "country",
           "schemaTo": "public",
-          "columnsFrom": [
-            "nationality_alpha_2_code"
-          ],
-          "columnsTo": [
-            "alpha_2_code"
-          ],
+          "columnsFrom": ["nationality_alpha_2_code"],
+          "columnsTo": ["alpha_2_code"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -322,12 +302,8 @@
           "tableFrom": "person",
           "tableTo": "document_type",
           "schemaTo": "public",
-          "columnsFrom": [
-            "document_type_code"
-          ],
-          "columnsTo": [
-            "code"
-          ],
+          "columnsFrom": ["document_type_code"],
+          "columnsTo": ["code"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -336,12 +312,8 @@
           "tableFrom": "person",
           "tableTo": "address",
           "schemaTo": "public",
-          "columnsFrom": [
-            "address_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["address_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -350,12 +322,8 @@
           "tableFrom": "person",
           "tableTo": "clerk_user",
           "schemaTo": "public",
-          "columnsFrom": [
-            "clerk_id"
-          ],
-          "columnsTo": [
-            "clerk_id"
-          ],
+          "columnsFrom": ["clerk_id"],
+          "columnsTo": ["clerk_id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -363,17 +331,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "person_document_type_code_document_number_key": {
-          "columns": [
-            "document_type_code",
-            "document_number"
-          ],
+          "columns": ["document_type_code", "document_number"],
           "nullsNotDistinct": false,
           "name": "person_document_type_code_document_number_key"
         },
         "person_clerk_id_key": {
-          "columns": [
-            "clerk_id"
-          ],
+          "columns": ["clerk_id"],
           "nullsNotDistinct": false,
           "name": "person_clerk_id_key"
         }
@@ -410,16 +373,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "document_type_code_key": {
-          "columns": [
-            "code"
-          ],
+          "columns": ["code"],
           "nullsNotDistinct": false,
           "name": "document_type_code_key"
         },
         "document_type_name_key": {
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "nullsNotDistinct": false,
           "name": "document_type_name_key"
         }
@@ -476,9 +435,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "clerk_user_clerk_id_key": {
-          "columns": [
-            "clerk_id"
-          ],
+          "columns": ["clerk_id"],
           "nullsNotDistinct": false,
           "name": "clerk_user_clerk_id_key"
         }
