@@ -6,7 +6,7 @@ import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
 import { DatabaseQueryError } from "@/errors/database-query-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { address, clerkUser, person } from "@/db/schema";
-import { Cause } from "effect";
+
 
 export const PersonRepositoryLive = Layer.effect(
   PersonRepositoryTag,
@@ -84,7 +84,7 @@ export const PersonRepositoryLive = Layer.effect(
           });
         }).pipe(
           Effect.tap(response => Effect.log(response)),
-          Effect.tapError(e => Effect.logError(Cause.die(e))),
+          Effect.tapError(e => Effect.logError(e)),
           Effect.withLogSpan(
             "src/repositories/person-repository-live.ts>PersonRepositoryLive>onboardPerson()"
           )

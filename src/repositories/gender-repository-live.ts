@@ -4,7 +4,7 @@ import { DatabaseQueryError } from "@/errors/database-query-error";
 import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
 import { gender } from "@/db/schema";
 import { GenderRepositoryTag } from "@/repositories/gender-repository-tag";
-import { Cause } from "effect";
+
 
 export const GenderRepositoryLive = Layer.effect(
   GenderRepositoryTag,
@@ -20,7 +20,7 @@ export const GenderRepositoryLive = Layer.effect(
             "src/repositories.gender-repository-live.ts>GenderRepositoryTag>findAll()"
           ),
           Effect.tap(() => Effect.log()),
-          Effect.tapError(e => Effect.logError(Cause.die(e)))
+          Effect.tapError(e => Effect.logError(e))
         ),
     };
   })

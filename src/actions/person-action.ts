@@ -15,7 +15,6 @@ import { PersonServiceLive } from "@/services/person-service-live";
 import { PersonRepositoryLive } from "@/repositories/person-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import { mapToProblemDetails } from "@/utils/problem-details-mapper";
-import { Cause } from "effect";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
 
@@ -47,7 +46,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
       Effect.gen(function* (_) {
         const traceId = yield* _(FiberRef.get(currentTraceId));
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(Cause.die(_ZodValidationError));
+        yield* Effect.logError(_ZodValidationError);
 
         return mapToProblemDetails(_ZodValidationError, 400, {
           requestUrl,
@@ -61,7 +60,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
         Effect.gen(function* (_) {
           const traceId = yield* _(FiberRef.get(currentTraceId));
           const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-          yield* Effect.logError(Cause.die(_PersonConstraintViolationError));
+          yield* Effect.logError(_PersonConstraintViolationError);
 
           return mapToProblemDetails(_PersonConstraintViolationError, 409, {
             requestUrl,
@@ -73,7 +72,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
       Effect.gen(function* (_) {
         const traceId = yield* _(FiberRef.get(currentTraceId));
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(Cause.die(e));
+        yield* Effect.logError(e);
         return mapToProblemDetails(e, 500, {
           requestUrl,
           traceId,

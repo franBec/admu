@@ -7,7 +7,7 @@ import { GenderRepositoryLive } from "@/repositories/gender-repository-live";
 import * as FiberRef from "effect/FiberRef";
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import { mapToProblemDetails } from "@/utils/problem-details-mapper";
-import { Cause } from "effect";
+
 import { headers } from "next/headers";
 
 export async function fetchGenders() {
@@ -26,7 +26,7 @@ export async function fetchGenders() {
       Effect.gen(function* (_) {
         const traceId = yield* _(FiberRef.get(currentTraceId));
         const requestUrl = yield* _(FiberRef.get(currentRequestUrl));
-        yield* Effect.logError(Cause.die(e));
+        yield* Effect.logError(e);
 
         return mapToProblemDetails(e, 500, {
           requestUrl,
