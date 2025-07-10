@@ -1,15 +1,34 @@
 import {
   pgTable,
+  unique,
   serial,
   text,
-  char,
   timestamp,
+  char,
   foreignKey,
-  unique,
   date,
   integer,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+
+export const clerkUser = pgTable(
+  "clerk_user",
+  {
+    id: serial().primaryKey().notNull(),
+    clerkId: text("clerk_id").notNull(),
+    email: text().notNull(),
+    imageUrl: text("image_url"),
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+      mode: "string",
+    }).defaultNow(),
+    updatedAt: timestamp("updated_at", {
+      withTimezone: true,
+      mode: "string",
+    }).defaultNow(),
+  },
+  table => [unique("clerk_user_clerk_id_key").on(table.clerkId)]
+);
 
 export const address = pgTable("address", {
   id: serial().primaryKey().notNull(),
@@ -20,7 +39,7 @@ export const address = pgTable("address", {
   city: text().notNull(),
   postalCode: text("postal_code").notNull(),
   province: text().notNull(),
-  countryAlpha2Code: char("country_alpha_2_code", { length: 2 }).notNull(),
+  country: char({ length: 2 }).notNull(),
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",
@@ -40,10 +59,10 @@ export const person = pgTable(
     fullName: text("full_name").generatedAlwaysAs(
       sql`((given_name || ' '::text) || family_name)`
     ),
-    genderCode: text("gender_code").notNull(),
+    gender: text().notNull(),
     birthDate: date("birth_date").notNull(),
-    nationalityAlpha2Code: char("nationality_alpha_2_code", { length: 2 }),
-    documentTypeCode: text("document_type_code").notNull(),
+    nationality: char({ length: 2 }),
+    documentType: text("document_type").notNull(),
     documentNumber: text("document_number").notNull(),
     phoneNumber: text("phone_number"),
     addressId: integer("address_id").notNull(),
@@ -69,28 +88,9 @@ export const person = pgTable(
       name: "person_clerk_id_fkey",
     }).onDelete("set null"),
     unique("person_document_type_code_document_number_key").on(
-      table.documentTypeCode,
+      table.documentType,
       table.documentNumber
     ),
     unique("person_clerk_id_key").on(table.clerkId),
   ]
-);
-
-export const clerkUser = pgTable(
-  "clerk_user",
-  {
-    id: serial().primaryKey().notNull(),
-    clerkId: text("clerk_id").notNull(),
-    email: text().notNull(),
-    imageUrl: text("image_url"),
-    createdAt: timestamp("created_at", {
-      withTimezone: true,
-      mode: "string",
-    }).defaultNow(),
-    updatedAt: timestamp("updated_at", {
-      withTimezone: true,
-      mode: "string",
-    }).defaultNow(),
-  },
-  table => [unique("clerk_user_clerk_id_key").on(table.clerkId)]
 );

@@ -1,11 +1,11 @@
 export enum Gender {
-  Male = "male",
-  Female = "female",
-  Other = "other",
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHER = "OTHER",
 }
 
 export const GENDERS = [
-  { code: Gender.Male, name: "Male" },
-  { code: Gender.Female, name: "Female" },
-  { code: Gender.Other, name: "Other" },
+  { code: Gender.MALE, name: "Male" },
+  { code: Gender.FEMALE, name: "Female" },
+  { code: Gender.OTHER, name: "Other" },
 ];

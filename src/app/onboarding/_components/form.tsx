@@ -75,10 +75,10 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
       givenName: initialUserData.givenName || "",
       familyName: initialUserData.familyName || "",
       email: initialUserData.email,
-      genderCode: undefined,
+      gender: undefined,
       birthDate: new Date("2000-01-01"),
-      nationalityAlpha2Code: undefined,
-      documentTypeCode: undefined,
+      nationality: undefined,
+      documentType: undefined,
       documentNumber: "",
       phoneNumber: initialUserData.phoneNumber,
       address: {
@@ -89,7 +89,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
         city: "",
         postalCode: "",
         province: "",
-        countryAlpha2Code: undefined,
+        country: undefined,
       },
     },
   });
@@ -248,7 +248,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="genderCode"
+            name="gender"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
@@ -275,7 +275,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="nationalityAlpha2Code"
+            name="nationality"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nationality</FormLabel>
@@ -305,7 +305,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="documentTypeCode"
+            name="documentType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Document Type</FormLabel>
@@ -452,7 +452,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="address.countryAlpha2Code"
+            name="address.country"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Country</FormLabel>

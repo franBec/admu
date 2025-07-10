@@ -3,7 +3,7 @@ import { z } from "zod";
 export const onboardingFormSchema = z.object({
   givenName: z.string().nonempty("First name cannot be empty."),
   familyName: z.string().nonempty("Last name cannot be empty."),
-  genderCode: z.string().nonempty("Please select a gender."),
+  gender: z.string().nonempty("Please select a gender."),
   birthDate: z.coerce
     .date({
       errorMap: (issue, ctx) => {
@@ -16,10 +16,10 @@ export const onboardingFormSchema = z.object({
     .refine(date => date < new Date(), {
       message: "Birth date cannot be in the future.",
     }),
-  nationalityAlpha2Code: z
+  nationality: z
     .string()
     .length(2, { message: "Nationality must be a 2-letter code." }),
-  documentTypeCode: z.string().nonempty("Please select a document type."),
+  documentType: z.string().nonempty("Please select a document type."),
   documentNumber: z.string().nonempty("Document number cannot be empty."),
   email: z.string().email({ message: "Please enter a valid email address." }),
   phoneNumber: z.string().nullish(),
@@ -31,7 +31,7 @@ export const onboardingFormSchema = z.object({
     city: z.string().nonempty("City cannot be empty."),
     postalCode: z.string().nonempty("Postal code cannot be empty."),
     province: z.string().nonempty("Province cannot be empty."),
-    countryAlpha2Code: z
+    country: z
       .string()
       .length(2, { message: "Country must be a 2-letter code." }),
   }),
