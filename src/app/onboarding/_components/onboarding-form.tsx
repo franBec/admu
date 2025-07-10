@@ -7,7 +7,7 @@ import { ChevronDownIcon } from "lucide-react";
 import {
   OnboardingFormValues,
   onboardingFormSchema,
-} from "@/schemas/onboarding-form-schema";
+} from "@/core/schemas/onboarding-form-schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -37,10 +37,10 @@ import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import { onboardPerson } from "@/actions/person-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
-import { COUNTRIES } from "@/domain/country";
-import { DOCUMENT_TYPES } from "@/domain/document-type";
-import { GENDERS } from "@/domain/gender";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
+import { COUNTRIES } from "@/core/enums/country";
+import { DOCUMENT_TYPES } from "@/core/enums/document-type";
+import { GENDERS } from "@/core/enums/gender";
 
 interface OnboardingFormProps {
   initialUserData: {

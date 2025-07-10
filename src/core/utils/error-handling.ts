@@ -2,9 +2,9 @@ import * as Effect from "effect/Effect";
 import * as FiberRef from "effect/FiberRef";
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import * as Data from "effect/Data";
-import { ZodValidationError } from "@/errors/zod-validation-error";
-import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { ZodValidationError } from "@/core/errors/zod-validation-error";
+import { PersonConstraintViolationError } from "@/core/errors/person-constraint-violation-error";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 
 export const handleError = <
   E extends Data.TaggedError<string, { message?: string }>,

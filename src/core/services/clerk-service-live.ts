@@ -1,9 +1,9 @@
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
-import { ClerkServiceTag } from "@/services/clerk-service-tag";
-import { ClerkNextjsServerError } from "@/errors/clerk-nextjs-server-error";
-import { ClerkCurrentUserNotFoundError } from "@/errors/clerk-current-user-not-found-error";
+import { ClerkServiceTag } from "@/core/services/clerk-service-tag";
+import { ClerkNextjsServerError } from "@/core/errors/clerk-nextjs-server-error";
+import { ClerkCurrentUserNotFoundError } from "@/core/errors/clerk-current-user-not-found-error";
 
 export const ClerkServiceLive = Layer.effect(
   ClerkServiceTag,

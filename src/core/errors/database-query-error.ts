@@ -1,7 +1,7 @@
 import * as Data from "effect/Data";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 
-export class DatabasePoolError extends Data.TaggedError("DatabasePoolError")<{
+export class DatabaseQueryError extends Data.TaggedError("DatabaseQueryError")<{
   e: unknown;
   message?: string;
 }> {

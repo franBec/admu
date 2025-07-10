@@ -1,7 +1,9 @@
 import * as Data from "effect/Data";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 
-export class DatabaseQueryError extends Data.TaggedError("DatabaseQueryError")<{
+export class ClerkNextjsServerError extends Data.TaggedError(
+  "ClerkNextjsServerError"
+)<{
   e: unknown;
   message?: string;
 }> {

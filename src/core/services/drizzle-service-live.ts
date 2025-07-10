@@ -2,11 +2,10 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
-import * as schema from "@/db/schema";
-import * as relations from "@/db/relations";
-
-import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
-import { DatabasePoolError } from "@/errors/database-pool-error";
+import * as schema from "@/core/db/schema";
+import * as relations from "@/core/db/relations";
+import { DrizzleServiceTag } from "@/core/services/drizzle-service-tag";
+import { DatabasePoolError } from "@/core/errors/database-pool-error";
 
 const fullSchema = { ...schema, ...relations };
 

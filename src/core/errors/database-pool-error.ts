@@ -1,7 +1,7 @@
 import * as Data from "effect/Data";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 
-export class ZodUnknownError extends Data.TaggedError("ZodUnknownError")<{
+export class DatabasePoolError extends Data.TaggedError("DatabasePoolError")<{
   e: unknown;
   message?: string;
 }> {

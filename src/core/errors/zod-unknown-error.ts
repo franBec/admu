@@ -1,9 +1,7 @@
 import * as Data from "effect/Data";
-import { UNEXPECTED_ERROR } from "@/utils/constants";
+import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 
-export class ClerkNextjsServerError extends Data.TaggedError(
-  "ClerkNextjsServerError"
-)<{
+export class ZodUnknownError extends Data.TaggedError("ZodUnknownError")<{
   e: unknown;
   message?: string;
 }> {

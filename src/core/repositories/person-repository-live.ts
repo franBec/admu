@@ -1,11 +1,11 @@
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import { sql } from "drizzle-orm";
-import { PersonRepositoryTag } from "@/repositories/person-repository-tag";
-import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
-import { DatabaseQueryError } from "@/errors/database-query-error";
-import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
-import { address, clerkUser, person } from "@/db/schema";
+import { PersonRepositoryTag } from "@/core/repositories/person-repository-tag";
+import { DrizzleServiceTag } from "@/core/services/drizzle-service-tag";
+import { DatabaseQueryError } from "@/core/errors/database-query-error";
+import { PersonConstraintViolationError } from "@/core/errors/person-constraint-violation-error";
+import { address, clerkUser, person } from "@/core/db/schema";
 
 export const PersonRepositoryLive = Layer.effect(
   PersonRepositoryTag,

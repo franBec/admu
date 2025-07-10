@@ -1,9 +1,9 @@
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
-import { PersonServiceTag } from "@/services/person-service-tag";
-import { PersonRepositoryTag } from "@/repositories/person-repository-tag";
-import { ClerkServiceTag } from "@/services/clerk-service-tag";
-import { ClerkUserDoesNotHaveEmailAddress } from "@/errors/clerk-user-does-not-have-email-address";
+import { PersonServiceTag } from "@/core/services/person-service-tag";
+import { PersonRepositoryTag } from "@/core/repositories/person-repository-tag";
+import { ClerkServiceTag } from "@/core/services/clerk-service-tag";
+import { ClerkUserDoesNotHaveEmailAddress } from "@/core/errors/clerk-user-does-not-have-email-address";
 
 export const PersonServiceLive = Layer.effect(
   PersonServiceTag,

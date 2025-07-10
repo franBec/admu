@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
+import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/core/utils/constants";
 
 const isOnboardingRoute = createRouteMatcher(["/onboarding"]);
 const isPublicRoute = createRouteMatcher([
