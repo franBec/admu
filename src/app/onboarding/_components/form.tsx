@@ -38,8 +38,9 @@ import { useRouter } from "next/navigation";
 import { onboardPerson } from "@/actions/person-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
 import { UNEXPECTED_ERROR } from "@/utils/constants";
-
-import { useOnboardingData } from "@/app/onboarding/_components/onboarding-data-provider";
+import { COUNTRIES } from "@/domain/country";
+import { DOCUMENT_TYPES } from "@/domain/document-type";
+import { GENDERS } from "@/domain/gender";
 
 interface OnboardingFormProps {
   initialUserData: {
@@ -59,7 +60,6 @@ type ProblemDetails = {
 };
 
 export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
-  const { countries, genders, documentTypes } = useOnboardingData();
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -262,7 +262,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {genders.map(gender => (
+                    {GENDERS.map(gender => (
                       <SelectItem key={gender.code} value={gender.code}>
                         {gender.name}
                       </SelectItem>
@@ -289,10 +289,10 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {countries.map(country => (
+                    {COUNTRIES.map(country => (
                       <SelectItem
-                        key={country.alpha2Code}
-                        value={country.alpha2Code}
+                        key={country.alpha_2_code}
+                        value={country.alpha_2_code}
                       >
                         {country.name}
                       </SelectItem>
@@ -319,7 +319,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {documentTypes.map(docType => (
+                    {DOCUMENT_TYPES.map(docType => (
                       <SelectItem key={docType.code} value={docType.code}>
                         {docType.name}
                       </SelectItem>
@@ -466,10 +466,10 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {countries.map(country => (
+                    {COUNTRIES.map(country => (
                       <SelectItem
-                        key={country.alpha2Code}
-                        value={country.alpha2Code}
+                        key={country.alpha_2_code}
+                        value={country.alpha_2_code}
                       >
                         {country.name}
                       </SelectItem>

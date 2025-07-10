@@ -4,90 +4,6 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.gender": {
-      "name": "gender",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "code": {
-          "name": "code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "gender_code_key": {
-          "columns": ["code"],
-          "nullsNotDistinct": false,
-          "name": "gender_code_key"
-        },
-        "gender_name_key": {
-          "columns": ["name"],
-          "nullsNotDistinct": false,
-          "name": "gender_name_key"
-        }
-      },
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.country": {
-      "name": "country",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "alpha_2_code": {
-          "name": "alpha_2_code",
-          "type": "char(2)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "country_alpha_2_code_key": {
-          "columns": ["alpha_2_code"],
-          "nullsNotDistinct": false,
-          "name": "country_alpha_2_code_key"
-        },
-        "country_name_key": {
-          "columns": ["name"],
-          "nullsNotDistinct": false,
-          "name": "country_name_key"
-        }
-      },
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
     "public.address": {
       "name": "address",
       "schema": "",
@@ -162,18 +78,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "address_country_alpha_2_code_fkey": {
-          "name": "address_country_alpha_2_code_fkey",
-          "tableFrom": "address",
-          "tableTo": "country",
-          "schemaTo": "public",
-          "columnsFrom": ["country_alpha_2_code"],
-          "columnsTo": ["alpha_2_code"],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {},
@@ -277,36 +182,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "person_gender_code_fkey": {
-          "name": "person_gender_code_fkey",
-          "tableFrom": "person",
-          "tableTo": "gender",
-          "schemaTo": "public",
-          "columnsFrom": ["gender_code"],
-          "columnsTo": ["code"],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        },
-        "person_nationality_alpha_2_code_fkey": {
-          "name": "person_nationality_alpha_2_code_fkey",
-          "tableFrom": "person",
-          "tableTo": "country",
-          "schemaTo": "public",
-          "columnsFrom": ["nationality_alpha_2_code"],
-          "columnsTo": ["alpha_2_code"],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "person_document_type_code_fkey": {
-          "name": "person_document_type_code_fkey",
-          "tableFrom": "person",
-          "tableTo": "document_type",
-          "schemaTo": "public",
-          "columnsFrom": ["document_type_code"],
-          "columnsTo": ["code"],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        },
         "person_address_id_fkey": {
           "name": "person_address_id_fkey",
           "tableFrom": "person",
@@ -339,48 +214,6 @@
           "columns": ["clerk_id"],
           "nullsNotDistinct": false,
           "name": "person_clerk_id_key"
-        }
-      },
-      "checkConstraints": {},
-      "policies": {},
-      "isRLSEnabled": false
-    },
-    "public.document_type": {
-      "name": "document_type",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "code": {
-          "name": "code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "document_type_code_key": {
-          "columns": ["code"],
-          "nullsNotDistinct": false,
-          "name": "document_type_code_key"
-        },
-        "document_type_name_key": {
-          "columns": ["name"],
-          "nullsNotDistinct": false,
-          "name": "document_type_name_key"
         }
       },
       "checkConstraints": {},
