@@ -39,22 +39,9 @@ import { onboardPerson } from "@/actions/person-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
 import { UNEXPECTED_ERROR } from "@/utils/constants";
 
+import { useOnboardingData } from "@/app/onboarding/_components/onboarding-data-provider";
+
 interface OnboardingFormProps {
-  countries: readonly {
-    id: number;
-    alpha2Code: string;
-    name: string;
-  }[];
-  genders: readonly {
-    id: number;
-    code: string;
-    name: string;
-  }[];
-  documentTypes: readonly {
-    id: number;
-    code: string;
-    name: string;
-  }[];
   initialUserData: {
     givenName: string | null | undefined;
     familyName: string | null | undefined;
@@ -71,12 +58,8 @@ type ProblemDetails = {
   detail: string;
 };
 
-export function OnboardingForm({
-  countries,
-  genders,
-  documentTypes,
-  initialUserData,
-}: OnboardingFormProps) {
+export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
+  const { countries, genders, documentTypes } = useOnboardingData();
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);

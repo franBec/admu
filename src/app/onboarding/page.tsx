@@ -3,6 +3,7 @@ import { fetchCountries } from "@/actions/country-action";
 import { fetchGenders } from "@/actions/gender-action";
 import { fetchDocumentTypes } from "@/actions/document-type-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
+import { OnboardingDataProvider } from "@/app/onboarding/_components/onboarding-data-provider";
 
 interface ProblemDetails {
   detail: string;
@@ -71,11 +72,13 @@ const Page = async () => {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center p-4">
-      <OnboardingWrapper
-        countries={countries as Country[]}
-        genders={genders as Gender[]}
-        documentTypes={documentTypes as DocumentType[]}
-      />
+      <OnboardingDataProvider
+        countries={countries as readonly Country[]}
+        genders={genders as readonly Gender[]}
+        documentTypes={documentTypes as readonly DocumentType[]}
+      >
+        <OnboardingWrapper />
+      </OnboardingDataProvider>
     </div>
   );
 };

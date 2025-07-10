@@ -4,29 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { OnboardingForm } from "@/app/onboarding/_components/form";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface OnboardingWrapperProps {
-  countries: readonly {
-    id: number;
-    alpha2Code: string;
-    name: string;
-  }[];
-  genders: readonly {
-    id: number;
-    code: string;
-    name: string;
-  }[];
-  documentTypes: readonly {
-    id: number;
-    code: string;
-    name: string;
-  }[];
-}
-
-export function OnboardingWrapper({
-  countries,
-  genders,
-  documentTypes,
-}: OnboardingWrapperProps) {
+export function OnboardingWrapper() {
   const { isLoaded, user } = useUser();
 
   if (!isLoaded) {
@@ -35,9 +13,6 @@ export function OnboardingWrapper({
 
   return (
     <OnboardingForm
-      countries={countries}
-      genders={genders}
-      documentTypes={documentTypes}
       initialUserData={{
         givenName: user?.firstName,
         familyName: user?.lastName,
