@@ -10,16 +10,16 @@ import {
 import { z } from "zod";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 import { ZodUnknownError } from "@/errors/zod-unknown-error";
-import { PersonServiceTag } from "@/services/person-service-tag";
-import { PersonServiceLive } from "@/services/person-service-live";
-import { PersonRepositoryLive } from "@/repositories/person-repository-live";
+import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service-tag";
+import { OnboardServiceLive } from "@/features/onboarding/onboard-service-live";
+import { OnboardRepositoryLive } from "@/features/onboarding/adapters/out/repositories/onboard-repository-live";
 import { DrizzleServiceLive } from "@/services/drizzle-service-live";
 import { defaultError, handleError } from "@/utils/error-handling";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
 import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
-export async function onboardPerson(values: OnboardingFormValues) {
+export async function onboard(values: OnboardingFormValues) {
   const headersList = await headers();
   const traceId = headersList.get(HEADER_TRACE_ID);
   const requestUrl = headersList.get(HEADER_REQUEST_URL);
@@ -39,7 +39,7 @@ export async function onboardPerson(values: OnboardingFormValues) {
           },
         });
 
-        yield* (yield* PersonServiceTag).onboardPerson(parsedValues);
+        yield* (yield* OnboardServiceTag).onboardPerson(parsedValues);
         return;
       })
     ),
@@ -53,15 +53,15 @@ export async function onboardPerson(values: OnboardingFormValues) {
         handleError(_PersonConstraintViolationError, 409)
     ),
     defaultError,
-    Effect.provide(PersonServiceLive),
+    Effect.provide(OnboardServiceLive),
     Effect.provide(ClerkServiceLive),
-    Effect.provide(PersonRepositoryLive),
+    Effect.provide(OnboardRepositoryLive),
     Effect.provide(DrizzleServiceLive),
     Effect.locally(currentTraceId, traceId),
     Effect.locally(currentRequestUrl, requestUrl),
     Effect.annotateLogs("traceId", traceId),
     Effect.annotateLogs("requestUrl", requestUrl),
-    Effect.withLogSpan("src/actions/person-action.ts>onboardPerson()")
+    Effect.withLogSpan("src/actions/onboard-action.ts>onboardPerson()")
   );
 
   return Effect.runPromise(program);

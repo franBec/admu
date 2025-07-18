@@ -1,8 +1,8 @@
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
-import { DatabaseQueryError } from "@/core/errors/database-query-error";
-import { address, clerkUser, person } from "@/core/db/schema";
-import { PersonConstraintViolationError } from "@/core/errors/person-constraint-violation-error";
+import { DatabaseQueryError } from "@/errors/database-query-error";
+import { address, clerkUser, person } from "@/db/schema";
+import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 
 export type PersonOnboardData = Omit<
   typeof person.$inferInsert,
@@ -18,8 +18,8 @@ export type ClerkUserOnboardData = Pick<
   typeof clerkUser.$inferInsert,
   "clerkId" | "email" | "imageUrl"
 >;
-export class PersonRepositoryTag extends Context.Tag("PersonRepositoryTag")<
-  PersonRepositoryTag,
+export class OnboardRepositoryTag extends Context.Tag("OnboardRepositoryTag")<
+  OnboardRepositoryTag,
   {
     readonly onboardPerson: (
       personData: PersonOnboardData,

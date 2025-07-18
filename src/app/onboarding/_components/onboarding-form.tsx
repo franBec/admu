@@ -35,7 +35,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { startTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { onboardPerson } from "@/actions/person-action";
+import { onboard } from "@/features/onboarding/adapters/in/actions/onboard-action";
 import { ProblemDetailsAlert } from "@/components/alert/problem-details-alert";
 import { UNEXPECTED_ERROR } from "@/core/utils/constants";
 import { COUNTRIES } from "@/core/enums/country";
@@ -98,7 +98,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
     setIsPending(true);
     setError(null);
     startTransition(() => {
-      onboardPerson(values)
+      onboard(values)
         .then(result => {
           if (result) {
             setError(result);

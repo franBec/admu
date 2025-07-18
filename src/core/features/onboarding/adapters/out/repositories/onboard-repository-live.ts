@@ -1,14 +1,14 @@
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import { sql } from "drizzle-orm";
-import { PersonRepositoryTag } from "@/core/repositories/person-repository-tag";
-import { DrizzleServiceTag } from "@/core/services/drizzle-service-tag";
-import { DatabaseQueryError } from "@/core/errors/database-query-error";
-import { PersonConstraintViolationError } from "@/core/errors/person-constraint-violation-error";
-import { address, clerkUser, person } from "@/core/db/schema";
+import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-repository-tag";
+import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
+import { DatabaseQueryError } from "@/errors/database-query-error";
+import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
+import { address, clerkUser, person } from "@/db/schema";
 
-export const PersonRepositoryLive = Layer.effect(
-  PersonRepositoryTag,
+export const OnboardRepositoryLive = Layer.effect(
+  OnboardRepositoryTag,
   Effect.gen(function* () {
     const { db } = yield* DrizzleServiceTag;
 
@@ -86,7 +86,7 @@ export const PersonRepositoryLive = Layer.effect(
           Effect.tap(response => Effect.log(response)),
           Effect.tapError(e => Effect.logError(e)),
           Effect.withLogSpan(
-            "src/repositories/person-repository-live.ts>PersonRepositoryLive>onboardPerson()"
+            "src/repositories/onboard-repository-live.ts>OnboardRepositoryLive>onboardPerson()"
           )
         ),
     };
