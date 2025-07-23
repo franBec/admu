@@ -11,10 +11,10 @@ import { AddressIn } from "@/features/onboarding/schemas/address.schema";
 export class OnboardServiceTag extends Context.Tag("OnboardServiceTag")<
   OnboardServiceTag,
   {
-    readonly onboardPerson: (
-      personIn: PersonIn,
-      addressIn: AddressIn
-    ) => Effect.Effect<
+    readonly onboardPerson: (data: {
+      personIn: PersonIn;
+      addressIn: AddressIn;
+    }) => Effect.Effect<
       void,
       | DatabaseQueryError
       | PersonConstraintViolationError

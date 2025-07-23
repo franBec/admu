@@ -12,8 +12,8 @@ export const OnboardServiceLive = Layer.effect(
     const clerkService = yield* ClerkServiceTag;
 
     return {
-      onboardPerson: (personIn, addressIn) =>
-        Effect.log(personIn, addressIn).pipe(
+      onboardPerson: data =>
+        Effect.log(data).pipe(
           Effect.andThen(() =>
             Effect.gen(function* () {
               const user = yield* clerkService.getCurrentUser();
@@ -25,15 +25,15 @@ export const OnboardServiceLive = Layer.effect(
                 );
               }
 
-              yield* personRepository.onboardPerson(
-                personIn,
-                {
+              yield* personRepository.onboardPerson({
+                personIn: data.personIn,
+                clerkUserIn: {
                   clerkId: user.id,
                   imageUrl: user.imageUrl,
                   email: email,
                 },
-                addressIn
-              );
+                addressIn: data.addressIn,
+              });
 
               yield* clerkService.updateUserPublicMetadata(user.id, {
                 onboardingComplete: true,

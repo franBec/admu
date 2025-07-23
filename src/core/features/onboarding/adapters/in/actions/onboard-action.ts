@@ -39,10 +39,10 @@ export async function onboard(values: OnboardingFormValues) {
           },
         });
 
-        yield* (yield* OnboardServiceTag).onboardPerson(
-          parsedValues.person,
-          parsedValues.address
-        );
+        yield* (yield* OnboardServiceTag).onboardPerson({
+          personIn: parsedValues.person,
+          addressIn: parsedValues.address,
+        });
         return;
       })
     ),

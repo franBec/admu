@@ -13,8 +13,8 @@ export const OnboardRepositoryLive = Layer.effect(
     const { db } = yield* DrizzleServiceTag;
 
     return {
-      onboardPerson: (personIn, clerkUserIn, addressIn) =>
-        Effect.log(personIn, clerkUserIn, addressIn).pipe(
+      onboardPerson: data =>
+        Effect.log(data).pipe(
           Effect.andThen(() =>
             Effect.tryPromise<
               void,
@@ -26,15 +26,15 @@ export const OnboardRepositoryLive = Layer.effect(
                   await tx
                     .insert(clerkUser)
                     .values({
-                      clerkId: clerkUserIn.clerkId,
-                      email: clerkUserIn.email,
-                      imageUrl: clerkUserIn.imageUrl,
+                      clerkId: data.clerkUserIn.clerkId,
+                      email: data.clerkUserIn.email,
+                      imageUrl: data.clerkUserIn.imageUrl,
                     })
                     .onConflictDoUpdate({
                       target: clerkUser.clerkId,
                       set: {
-                        email: clerkUserIn.email,
-                        imageUrl: clerkUserIn.imageUrl,
+                        email: data.clerkUserIn.email,
+                        imageUrl: data.clerkUserIn.imageUrl,
                         updatedAt: sql`now()`,
                       },
                     });
@@ -42,21 +42,23 @@ export const OnboardRepositoryLive = Layer.effect(
                   //address
                   const [newAddress] = await tx
                     .insert(address)
-                    .values(addressIn)
+                    .values(data.addressIn)
                     .returning({ id: address.id });
 
                   //person
                   const personInsertData = {
-                    givenName: personIn.givenName,
-                    familyName: personIn.familyName,
-                    gender: personIn.gender,
-                    birthDate: personIn.birthDate.toISOString().split("T")[0],
-                    nationality: personIn.nationality,
-                    documentType: personIn.documentType,
-                    documentNumber: personIn.documentNumber,
-                    phoneNumber: personIn.phoneNumber,
+                    givenName: data.personIn.givenName,
+                    familyName: data.personIn.familyName,
+                    gender: data.personIn.gender,
+                    birthDate: data.personIn.birthDate
+                      .toISOString()
+                      .split("T")[0],
+                    nationality: data.personIn.nationality,
+                    documentType: data.personIn.documentType,
+                    documentNumber: data.personIn.documentNumber,
+                    phoneNumber: data.personIn.phoneNumber,
                     addressId: newAddress.id,
-                    clerkId: clerkUserIn.clerkId,
+                    clerkId: data.clerkUserIn.clerkId,
                   };
 
                   await tx
