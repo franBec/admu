@@ -6,7 +6,7 @@ import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import {
   onboardingFormZObject,
   OnboardingFormValues,
-} from "@/features/onboarding/adapters/in/actions/schema/onboarding-form.schema";
+} from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
 import { z } from "zod";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 import { ZodUnknownError } from "@/errors/zod-unknown-error";

@@ -7,7 +7,7 @@ import { ChevronDownIcon } from "lucide-react";
 import {
   OnboardingFormValues,
   onboardingFormZObject,
-} from "@/features/onboarding/adapters/in/actions/schema/onboarding-form.schema";
+} from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
