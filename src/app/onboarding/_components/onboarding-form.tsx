@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import {
   OnboardingFormValues,
-  onboardingFormSchema,
+  onboardingFormZObject,
 } from "@/features/onboarding/adapters/in/actions/schema/onboarding-form.schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,17 +70,19 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
   );
 
   const form = useForm<OnboardingFormValues>({
-    resolver: zodResolver(onboardingFormSchema),
+    resolver: zodResolver(onboardingFormZObject),
     defaultValues: {
-      givenName: initialUserData.givenName || "",
-      familyName: initialUserData.familyName || "",
-      email: initialUserData.email,
-      gender: undefined,
-      birthDate: new Date("2000-01-01"),
-      nationality: undefined,
-      documentType: undefined,
-      documentNumber: "",
-      phoneNumber: initialUserData.phoneNumber,
+      person: {
+        givenName: initialUserData.givenName || "",
+        familyName: initialUserData.familyName || "",
+        email: initialUserData.email,
+        gender: undefined,
+        birthDate: new Date("2000-01-01"),
+        nationality: undefined,
+        documentType: undefined,
+        documentNumber: "",
+        phoneNumber: initialUserData.phoneNumber,
+      },
       address: {
         street: "",
         number: "",
@@ -133,7 +135,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <FormField
             control={form.control}
-            name="givenName"
+            name="person.givenName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>First Name</FormLabel>
@@ -146,7 +148,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="familyName"
+            name="person.familyName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
@@ -159,7 +161,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="email"
+            name="person.email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -175,7 +177,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="phoneNumber"
+            name="person.phoneNumber"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Phone Number (Optional)</FormLabel>
@@ -193,7 +195,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="birthDate"
+            name="person.birthDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Date of Birth</FormLabel>
@@ -248,7 +250,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="gender"
+            name="person.gender"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
@@ -275,7 +277,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="nationality"
+            name="person.nationality"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nationality</FormLabel>
@@ -305,7 +307,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="documentType"
+            name="person.documentType"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Document Type</FormLabel>
@@ -332,7 +334,7 @@ export function OnboardingForm({ initialUserData }: OnboardingFormProps) {
           />
           <FormField
             control={form.control}
-            name="documentNumber"
+            name="person.documentNumber"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Document Number</FormLabel>

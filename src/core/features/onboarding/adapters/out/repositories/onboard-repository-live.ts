@@ -13,8 +13,8 @@ export const OnboardRepositoryLive = Layer.effect(
     const { db } = yield* DrizzleServiceTag;
 
     return {
-      onboardPerson: (personData, clerkUserData, addressData) =>
-        Effect.log(personData, clerkUserData, addressData).pipe(
+      onboardPerson: (personIn, clerkUserIn, addressIn) =>
+        Effect.log(personIn, clerkUserIn, addressIn).pipe(
           Effect.andThen(() =>
             Effect.tryPromise<
               {
@@ -28,15 +28,15 @@ export const OnboardRepositoryLive = Layer.effect(
                   await tx
                     .insert(clerkUser)
                     .values({
-                      clerkId: clerkUserData.clerkId,
-                      email: clerkUserData.email,
-                      imageUrl: clerkUserData.imageUrl,
+                      clerkId: clerkUserIn.clerkId,
+                      email: clerkUserIn.email,
+                      imageUrl: clerkUserIn.imageUrl,
                     })
                     .onConflictDoUpdate({
                       target: clerkUser.clerkId,
                       set: {
-                        email: clerkUserData.email,
-                        imageUrl: clerkUserData.imageUrl,
+                        email: clerkUserIn.email,
+                        imageUrl: clerkUserIn.imageUrl,
                         updatedAt: sql`now()`,
                       },
                     });
@@ -44,21 +44,21 @@ export const OnboardRepositoryLive = Layer.effect(
                   //address
                   const [newAddress] = await tx
                     .insert(address)
-                    .values(addressData)
+                    .values(addressIn)
                     .returning({ id: address.id });
 
                   //person
                   const personInsertData = {
-                    givenName: personData.givenName,
-                    familyName: personData.familyName,
-                    gender: personData.gender,
-                    birthDate: personData.birthDate,
-                    nationality: personData.nationality,
-                    documentType: personData.documentType,
-                    documentNumber: personData.documentNumber,
-                    phoneNumber: personData.phoneNumber,
+                    givenName: personIn.givenName,
+                    familyName: personIn.familyName,
+                    gender: personIn.gender,
+                    birthDate: personIn.birthDate.toISOString().split("T")[0],
+                    nationality: personIn.nationality,
+                    documentType: personIn.documentType,
+                    documentNumber: personIn.documentNumber,
+                    phoneNumber: personIn.phoneNumber,
                     addressId: newAddress.id,
-                    clerkId: clerkUserData.clerkId,
+                    clerkId: clerkUserIn.clerkId,
                   };
 
                   const [newPerson] = await tx

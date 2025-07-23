@@ -4,7 +4,7 @@ import * as Effect from "effect/Effect";
 
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
 import {
-  onboardingFormSchema,
+  onboardingFormZObject,
   OnboardingFormValues,
 } from "@/features/onboarding/adapters/in/actions/schema/onboarding-form.schema";
 import { z } from "zod";
@@ -28,7 +28,7 @@ export async function onboard(values: OnboardingFormValues) {
     Effect.andThen(() =>
       Effect.gen(function* () {
         const parsedValues = yield* Effect.try({
-          try: () => onboardingFormSchema.parse(values),
+          try: () => onboardingFormZObject.parse(values),
           catch: e => {
             if (e instanceof z.ZodError) {
               return new ZodValidationError({
@@ -39,7 +39,10 @@ export async function onboard(values: OnboardingFormValues) {
           },
         });
 
-        yield* (yield* OnboardServiceTag).onboardPerson(parsedValues);
+        yield* (yield* OnboardServiceTag).onboardPerson(
+          parsedValues.person,
+          parsedValues.address
+        );
         return;
       })
     ),
