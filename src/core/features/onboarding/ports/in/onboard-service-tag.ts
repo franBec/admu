@@ -15,7 +15,7 @@ export class OnboardServiceTag extends Context.Tag("OnboardServiceTag")<
       personIn: PersonIn,
       addressIn: AddressIn
     ) => Effect.Effect<
-      { id: number },
+      void,
       | DatabaseQueryError
       | PersonConstraintViolationError
       | ClerkCurrentUserNotFoundError

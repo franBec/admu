@@ -25,7 +25,7 @@ export const OnboardServiceLive = Layer.effect(
                 );
               }
 
-              const person = yield* personRepository.onboardPerson(
+              yield* personRepository.onboardPerson(
                 personIn,
                 {
                   clerkId: user.id,
@@ -38,8 +38,6 @@ export const OnboardServiceLive = Layer.effect(
               yield* clerkService.updateUserPublicMetadata(user.id, {
                 onboardingComplete: true,
               });
-
-              return person;
             })
           ),
           Effect.tap(response => Effect.log(response)),

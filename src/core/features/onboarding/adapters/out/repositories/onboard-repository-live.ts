@@ -17,9 +17,7 @@ export const OnboardRepositoryLive = Layer.effect(
         Effect.log(personIn, clerkUserIn, addressIn).pipe(
           Effect.andThen(() =>
             Effect.tryPromise<
-              {
-                id: number;
-              },
+              void,
               DatabaseQueryError | PersonConstraintViolationError
             >({
               try: () =>
@@ -61,12 +59,10 @@ export const OnboardRepositoryLive = Layer.effect(
                     clerkId: clerkUserIn.clerkId,
                   };
 
-                  const [newPerson] = await tx
+                  await tx
                     .insert(person)
                     .values(personInsertData)
                     .returning({ id: person.id });
-
-                  return newPerson;
                 }),
               catch: e => {
                 if (

@@ -14,7 +14,7 @@ export class OnboardRepositoryTag extends Context.Tag("OnboardRepositoryTag")<
       clerkUserIn: ClerkUserIn,
       addressIn: AddressIn
     ) => Effect.Effect<
-      { id: number },
+      void,
       DatabaseQueryError | PersonConstraintViolationError
     >;
   }
