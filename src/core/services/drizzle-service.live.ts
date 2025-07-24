@@ -4,12 +4,12 @@ import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import * as schema from "@/core/db/schema";
 import * as relations from "@/core/db/relations";
-import { DrizzleServiceTag } from "@/core/services/drizzle-service-tag";
+import { DrizzleServiceTag } from "@/services/drizzle-service.tag";
 import { DatabasePoolError } from "@/core/errors/database-pool-error";
 
 const fullSchema = { ...schema, ...relations };
 
-const label = "src/core/services/drizzle-service-live.ts>DrizzleServiceLive";
+const label = "src/core/services/drizzle-service.live.ts>DrizzleServiceLive";
 
 export const DrizzleServiceLive = Layer.scoped(
   DrizzleServiceTag,

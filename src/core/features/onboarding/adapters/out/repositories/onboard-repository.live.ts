@@ -1,14 +1,14 @@
 import * as Layer from "effect/Layer";
 import * as Effect from "effect/Effect";
 import { sql } from "drizzle-orm";
-import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-repository-tag";
-import { DrizzleServiceTag } from "@/services/drizzle-service-tag";
+import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-repository.tag";
+import { DrizzleServiceTag } from "@/services/drizzle-service.tag";
 import { DatabaseQueryError } from "@/errors/database-query-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { address, clerkUser, person } from "@/db/schema";
 
 const label =
-  "src/core/features/onboarding/adapters/out/repositories/onboard-repository-live.ts>OnboardRepositoryLive>onboardPerson()";
+  "src/core/features/onboarding/adapters/out/repositories/onboard-repository.live.ts>OnboardRepositoryLive>onboardPerson()";
 
 export const OnboardRepositoryLive = Layer.effect(
   OnboardRepositoryTag,

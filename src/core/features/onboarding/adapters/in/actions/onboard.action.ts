@@ -10,17 +10,17 @@ import {
 import { z } from "zod";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 import { ZodUnknownError } from "@/errors/zod-unknown-error";
-import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service-tag";
-import { OnboardServiceLive } from "@/features/onboarding/onboard-service-live";
-import { OnboardRepositoryLive } from "@/features/onboarding/adapters/out/repositories/onboard-repository-live";
-import { DrizzleServiceLive } from "@/services/drizzle-service-live";
+import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service.tag";
+import { OnboardServiceLive } from "@/features/onboarding/onboard-service.live";
+import { OnboardRepositoryLive } from "@/features/onboarding/adapters/out/repositories/onboard-repository.live";
+import { DrizzleServiceLive } from "@/services/drizzle-service.live";
 import { defaultError, handleError } from "@/utils/error-handling";
 import { headers } from "next/headers";
-import { ClerkServiceLive } from "@/services/clerk-service-live";
+import { ClerkServiceLive } from "@/services/clerk-service.live";
 import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
 const label =
-  "src/core/features/onboarding/adapters/in/actions/onboard-action.ts>onboardPerson()";
+  "src/core/features/onboarding/adapters/in/actions/onboard.action.ts>onboardPerson()";
 
 export async function onboard(values: OnboardingFormValues) {
   const headersList = await headers();

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "@effect/vitest";
 import { Effect, Layer } from "effect";
-import { OnboardServiceLive } from "./onboard-service-live";
-import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service-tag";
-import { ClerkServiceTag } from "@/services/clerk-service-tag";
-import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-repository-tag";
+import { OnboardServiceLive } from "./onboard-service.live";
+import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service.tag";
+import { ClerkServiceTag } from "@/services/clerk-service.tag";
+import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-repository.tag";
 import { User } from "@clerk/nextjs/server";
 import { ClerkUserDoesNotHaveEmailAddress } from "@/errors/clerk-user-does-not-have-email-address";
 import { PersonIn } from "@/features/onboarding/schemas/person.schema";
