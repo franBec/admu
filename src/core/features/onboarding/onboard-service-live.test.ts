@@ -96,7 +96,9 @@ describe("OnboardService", () => {
       );
 
       expect(result._tag).toBe("Left");
-      expect(result.left).toBeInstanceOf(ClerkUserDoesNotHaveEmailAddress);
+      if (result._tag === "Left") {
+        expect(result.left).toBeInstanceOf(ClerkUserDoesNotHaveEmailAddress);
+      }
       expect(mockClerkService.getCurrentUser).toHaveBeenCalledTimes(1);
       expect(mockOnboardRepository.onboardPerson).not.toHaveBeenCalled();
       expect(mockClerkService.updateUserPublicMetadata).not.toHaveBeenCalled();
