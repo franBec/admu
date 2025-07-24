@@ -3,7 +3,7 @@ import * as Context from "effect/Context";
 import * as schema from "@/core/db/schema";
 import * as relations from "@/core/db/relations";
 
-export class DrizzleServiceTag extends Context.Tag("DrizzleService")<
+export class DrizzleServiceTag extends Context.Tag("DrizzleServiceTag")<
   DrizzleServiceTag,
   {
     readonly db: NodePgDatabase<typeof schema & typeof relations>;

@@ -4,7 +4,7 @@ import { User } from "@clerk/nextjs/server";
 import { ClerkNextjsServerError } from "@/core/errors/clerk-nextjs-server-error";
 import { ClerkCurrentUserNotFoundError } from "@/core/errors/clerk-current-user-not-found-error";
 
-export class ClerkServiceTag extends Context.Tag("@services/ClerkService")<
+export class ClerkServiceTag extends Context.Tag("ClerkServiceTag")<
   ClerkServiceTag,
   {
     readonly getCurrentUser: () => Effect.Effect<
