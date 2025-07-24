@@ -7,6 +7,9 @@ import { DatabaseQueryError } from "@/errors/database-query-error";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { address, clerkUser, person } from "@/db/schema";
 
+const label =
+  "src/core/features/onboarding/adapters/out/repositories/onboard-repository-live.ts>OnboardRepositoryLive>onboardPerson()";
+
 export const OnboardRepositoryLive = Layer.effect(
   OnboardRepositoryTag,
   Effect.gen(function* () {
@@ -83,9 +86,7 @@ export const OnboardRepositoryLive = Layer.effect(
           ),
           Effect.tap(response => Effect.log(response)),
           Effect.tapError(e => Effect.logError(e)),
-          Effect.withLogSpan(
-            "src/repositories/onboard-repository-live.ts>OnboardRepositoryLive>onboardPerson()"
-          )
+          Effect.withLogSpan(label)
         ),
     };
   })

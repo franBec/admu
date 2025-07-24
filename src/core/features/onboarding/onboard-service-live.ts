@@ -5,6 +5,9 @@ import { OnboardRepositoryTag } from "@/features/onboarding/ports/out/onboard-re
 import { ClerkServiceTag } from "@/services/clerk-service-tag";
 import { ClerkUserDoesNotHaveEmailAddress } from "@/errors/clerk-user-does-not-have-email-address";
 
+const label =
+  "src/core/features/onboarding/onboard-service-live.ts>OnboardServiceLive>onboardPerson()";
+
 export const OnboardServiceLive = Layer.effect(
   OnboardServiceTag,
   Effect.gen(function* () {
@@ -42,9 +45,7 @@ export const OnboardServiceLive = Layer.effect(
           ),
           Effect.tap(response => Effect.log(response)),
           Effect.tapError(e => Effect.logError(e)),
-          Effect.withLogSpan(
-            "src/services/onboard-service-live.ts>OnboardServiceLive>onboardPerson()"
-          )
+          Effect.withLogSpan(label)
         ),
     };
   })

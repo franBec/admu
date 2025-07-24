@@ -5,6 +5,8 @@ import { ClerkServiceTag } from "@/core/services/clerk-service-tag";
 import { ClerkNextjsServerError } from "@/core/errors/clerk-nextjs-server-error";
 import { ClerkCurrentUserNotFoundError } from "@/core/errors/clerk-current-user-not-found-error";
 
+const label = "src/core/services/clerk-service-live.ts>ClerkServiceLive>";
+
 export const ClerkServiceLive = Layer.effect(
   ClerkServiceTag,
   Effect.gen(function* () {
@@ -27,9 +29,7 @@ export const ClerkServiceLive = Layer.effect(
           ),
           Effect.tap(response => Effect.log(response)),
           Effect.tapError(e => Effect.logError(e)),
-          Effect.withLogSpan(
-            "src/services/clerk-service-live.ts>ClerkServiceLive>getCurrentUser()"
-          )
+          Effect.withLogSpan(label + "getCurrentUser()")
         ),
       updateUserPublicMetadata: (userId, metadata) =>
         Effect.log(userId, metadata).pipe(
@@ -46,9 +46,7 @@ export const ClerkServiceLive = Layer.effect(
           ),
           Effect.tap(() => Effect.log()),
           Effect.tapError(e => Effect.logError(e)),
-          Effect.withLogSpan(
-            "src/services/clerk-service-live.ts>ClerkServiceLive>updateUserPublicMetadata()"
-          )
+          Effect.withLogSpan(label + "updateUserPublicMetadata()")
         ),
     };
   })

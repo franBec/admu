@@ -9,6 +9,8 @@ import { DatabasePoolError } from "@/core/errors/database-pool-error";
 
 const fullSchema = { ...schema, ...relations };
 
+const label = "src/core/services/drizzle-service-live.ts>DrizzleServiceLive";
+
 export const DrizzleServiceLive = Layer.scoped(
   DrizzleServiceTag,
   Effect.succeed(process.env.DATABASE_URL).pipe(
@@ -41,9 +43,7 @@ export const DrizzleServiceLive = Layer.scoped(
             "Database connection established and client created."
           ).pipe(
             Effect.map(() => ({ db })),
-            Effect.withLogSpan(
-              "src/services/drizzle-service-live.ts>DrizzleServiceLive"
-            )
+            Effect.withLogSpan(label)
           );
         })
       );

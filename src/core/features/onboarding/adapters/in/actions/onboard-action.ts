@@ -19,6 +19,9 @@ import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service-live";
 import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
+const label =
+  "src/core/features/onboarding/adapters/in/actions/onboard-action.ts>onboardPerson()";
+
 export async function onboard(values: OnboardingFormValues) {
   const headersList = await headers();
   const traceId = headersList.get(HEADER_TRACE_ID);
@@ -64,7 +67,7 @@ export async function onboard(values: OnboardingFormValues) {
     Effect.locally(currentRequestUrl, requestUrl),
     Effect.annotateLogs("traceId", traceId),
     Effect.annotateLogs("requestUrl", requestUrl),
-    Effect.withLogSpan("src/actions/onboard-action.ts>onboardPerson()")
+    Effect.withLogSpan(label)
   );
 
   return Effect.runPromise(program);
