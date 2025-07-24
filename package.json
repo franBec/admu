@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "mutation-test": "stryker run"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.0",
