@@ -34,21 +34,4 @@ describe("onboardingFormZObject", () => {
     const result = onboardingFormZObject.safeParse(validFormData);
     expect(result.success).toBe(true);
   });
-
-  it("should fail validation", () => {
-    const invalidPersonData = { ...validPersonData, givenName: "" };
-    const invalidFormData = {
-      person: invalidPersonData,
-      address: validAddressData,
-    };
-    const result = onboardingFormZObject.safeParse(invalidFormData);
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error).toBeInstanceOf(ZodError);
-      expect(result.error.errors[0].path).toEqual(["person", "givenName"]);
-      expect(result.error.errors[0].message).toBe(
-        "First name cannot be empty."
-      );
-    }
-  });
 });

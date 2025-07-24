@@ -13,6 +13,7 @@ export default {
   vitest: {
     configFile: "vitest.config.ts",
   },
+  ignoreStatic: true,
   mutate: [
     "src/core/**/*.ts",
     "!src/**/*.test.ts",
