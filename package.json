@@ -45,6 +45,9 @@
   "devDependencies": {
     "@effect/vitest": "^0.25.0",
     "@eslint/eslintrc": "^3",
+    "@stryker-mutator/core": "^9.0.1",
+    "@stryker-mutator/typescript-checker": "^9.0.1",
+    "@stryker-mutator/vitest-runner": "^9.0.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.15.4",
@@ -62,7 +65,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "tw-animate-css": "^1.3.4",
-    "typescript": "^5",
+    "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
