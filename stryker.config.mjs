@@ -16,6 +16,7 @@ export default {
   mutate: [
     "src/core/**/*.ts",
     "!src/**/*.test.ts",
+    "!src/**/*.tag.ts",
     "!src/core/db/**/*.ts",
     "!src/core/enums/**/*.ts",
     "!src/core/errors/**/*.ts",
