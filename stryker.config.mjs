@@ -16,6 +16,7 @@ export default {
   ignoreStatic: true,
   mutate: [
     "src/core/**/*.ts",
+    "src/core/**/*.schema.ts",
     "!src/**/*.test.ts",
     "!src/**/*.tag.ts",
     "!src/core/db/**/*.ts",

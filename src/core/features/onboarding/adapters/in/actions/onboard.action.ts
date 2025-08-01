@@ -22,12 +22,8 @@ import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 const label =
   "src/core/features/onboarding/adapters/in/actions/onboard.action.ts>onboardPerson()";
 
-export async function onboard(values: OnboardingFormValues) {
-  const headersList = await headers();
-  const traceId = headersList.get(HEADER_TRACE_ID);
-  const requestUrl = headersList.get(HEADER_REQUEST_URL);
-
-  const program = Effect.log().pipe(
+export function onboardProgram(values: OnboardingFormValues) {
+  return Effect.log().pipe(
     Effect.andThen(() =>
       Effect.gen(function* () {
         const parsedValues = yield* Effect.try({
@@ -58,7 +54,16 @@ export async function onboard(values: OnboardingFormValues) {
       _PersonConstraintViolationError =>
         handleError(_PersonConstraintViolationError, 409)
     ),
-    defaultError,
+    defaultError
+  );
+}
+
+export async function onboard(values: OnboardingFormValues) {
+  const headersList = await headers();
+  const traceId = headersList.get(HEADER_TRACE_ID);
+  const requestUrl = headersList.get(HEADER_REQUEST_URL);
+
+  const program = onboardProgram(values).pipe(
     Effect.provide(OnboardServiceLive),
     Effect.provide(ClerkServiceLive),
     Effect.provide(OnboardRepositoryLive),
