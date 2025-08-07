@@ -6,6 +6,7 @@ import { PersonConstraintViolationError } from "@/errors/person-constraint-viola
 import { z } from "zod";
 import { PersonIn } from "@/features/onboarding/schemas/person.schema";
 import { AddressIn } from "@/features/onboarding/schemas/address.schema";
+import { ZodIssue } from "zod";
 
 describe("onboardEffect", () => {
   const handleError = vi.fn((error, status) => {
@@ -74,8 +75,12 @@ describe("onboardEffect", () => {
   it("should handle Zod validation errors", async () => {
     mockParse.mockImplementation(() => {
       throw new z.ZodError([
-        { message: "error 1", path: ["field1"], code: "invalid_type", expected: "string", received: "number" },
-        { message: "error 2", path: ["field2"], code: "invalid_type", expected: "string", received: "number" },
+        {
+          message: "error 1",
+        } as unknown as ZodIssue,
+        {
+          message: "error 2",
+        } as unknown as ZodIssue,
       ]);
     });
 
