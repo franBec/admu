@@ -17,21 +17,10 @@ describe("onboardEffect", () => {
   const mockOnboardService = {
     onboardPerson: mockOnboardPerson,
   };
-
   const validValues = {} as unknown as OnboardingFormValues;
-
   const mockParse = vi.fn();
 
-  beforeEach(() => {
-    vi.resetModules();
-    vi.clearAllMocks();
-    mockParse.mockClear();
-  });
-
-  it("should succeed on the happy path", async () => {
-    mockOnboardPerson.mockReturnValue(Effect.succeed(undefined));
-    mockParse.mockReturnValue(validValues);
-
+  async function setup() {
     vi.doMock("@/utils/error-handling", () => ({ handleError, defaultError }));
     vi.doMock(
       "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema",
@@ -39,14 +28,26 @@ describe("onboardEffect", () => {
         onboardingFormZObject: { parse: mockParse },
       })
     );
-
     const { onboardEffect } = await import("./onboard.effect");
+    return { onboardEffect };
+  }
 
-    const program = onboardEffect(validValues).pipe(
-      Effect.provideService(OnboardServiceTag, mockOnboardService)
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    mockParse.mockClear();
+  });
+
+  it("should succeed", async () => {
+    mockOnboardPerson.mockReturnValue(Effect.succeed(undefined));
+    mockParse.mockReturnValue(validValues);
+
+    const { onboardEffect } = await setup();
+    const result = await Effect.runPromise(
+      onboardEffect(validValues).pipe(
+        Effect.provideService(OnboardServiceTag, mockOnboardService)
+      )
     );
-
-    const result = await Effect.runPromise(program);
 
     expect(result).toBeUndefined();
     expect(mockParse).toHaveBeenCalledWith(validValues);
@@ -58,26 +59,16 @@ describe("onboardEffect", () => {
   });
 
   it("should handle Zod validation errors", async () => {
-    const zodError = new z.ZodError([]);
     mockParse.mockImplementation(() => {
-      throw zodError;
+      throw new z.ZodError([]);
     });
 
-    vi.doMock("@/utils/error-handling", () => ({ handleError, defaultError }));
-    vi.doMock(
-      "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema",
-      () => ({
-        onboardingFormZObject: { parse: mockParse },
-      })
+    const { onboardEffect } = await setup();
+    const result = await Effect.runPromise(
+      onboardEffect(validValues).pipe(
+        Effect.provideService(OnboardServiceTag, mockOnboardService)
+      )
     );
-
-    const { onboardEffect } = await import("./onboard.effect");
-
-    const program = onboardEffect(validValues).pipe(
-      Effect.provideService(OnboardServiceTag, mockOnboardService)
-    );
-
-    const result = await Effect.runPromise(program);
 
     expect(handleError).toHaveBeenCalledWith(
       expect.objectContaining({ _tag: "ZodValidationError" }),
@@ -91,26 +82,17 @@ describe("onboardEffect", () => {
     expect(mockOnboardPerson).not.toHaveBeenCalled();
   });
 
-  it("should handle PersonConstraintViolationError from the service", async () => {
+  it("should handle PersonConstraintViolationError", async () => {
     const error = new PersonConstraintViolationError({ message: "" });
     mockOnboardPerson.mockReturnValue(Effect.fail(error));
     mockParse.mockReturnValue(validValues);
 
-    vi.doMock("@/utils/error-handling", () => ({ handleError, defaultError }));
-    vi.doMock(
-      "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema",
-      () => ({
-        onboardingFormZObject: { parse: mockParse },
-      })
+    const { onboardEffect } = await setup();
+    const result = await Effect.runPromise(
+      onboardEffect(validValues).pipe(
+        Effect.provideService(OnboardServiceTag, mockOnboardService)
+      )
     );
-
-    const { onboardEffect } = await import("./onboard.effect");
-
-    const program = onboardEffect(validValues).pipe(
-      Effect.provideService(OnboardServiceTag, mockOnboardService)
-    );
-
-    const result = await Effect.runPromise(program);
 
     expect(handleError).toHaveBeenCalledWith(error, 409);
     expect(result).toEqual({ handled: true, error, status: 409 });
@@ -121,21 +103,12 @@ describe("onboardEffect", () => {
     mockOnboardPerson.mockReturnValue(Effect.fail(unhandledError));
     mockParse.mockReturnValue(validValues);
 
-    vi.doMock("@/utils/error-handling", () => ({ handleError, defaultError }));
-    vi.doMock(
-      "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema",
-      () => ({
-        onboardingFormZObject: { parse: mockParse },
-      })
+    const { onboardEffect } = await setup();
+    const result = await Effect.runPromise(
+      onboardEffect(validValues).pipe(
+        Effect.provideService(OnboardServiceTag, mockOnboardService)
+      )
     );
-
-    const { onboardEffect } = await import("./onboard.effect");
-
-    const program = onboardEffect(validValues).pipe(
-      Effect.provideService(OnboardServiceTag, mockOnboardService)
-    );
-
-    const result = await Effect.runPromise(program);
 
     expect(handleError).not.toHaveBeenCalled();
     expect(result).toEqual({
