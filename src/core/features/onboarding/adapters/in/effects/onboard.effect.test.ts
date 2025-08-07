@@ -4,18 +4,19 @@ import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-servic
 import { OnboardingFormValues } from "@/features/onboarding/adapters/in/schemas/onboarding-form.schema";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { z } from "zod";
+import { PersonIn } from "@/features/onboarding/schemas/person.schema";
+import { AddressIn } from "@/features/onboarding/schemas/address.schema";
 
 describe("onboardEffect", () => {
   const handleError = vi.fn((error, status) => {
-    const problemDetails = {
+    return Effect.fail({
       title: error._tag,
       status: status,
       instance: null,
       timestamp: new Date().toISOString(),
       trace: null,
       detail: error.message,
-    };
-    return Effect.fail(problemDetails);
+    });
   });
   const defaultError = (self: Effect.Effect<any>) =>
     Effect.catchAll(self, e =>
@@ -25,26 +26,10 @@ describe("onboardEffect", () => {
   const mockOnboardService = {
     onboardPerson: mockOnboardPerson,
   };
-  const validValues: OnboardingFormValues = {
-    person: {
-      givenName: "John",
-      familyName: "Doe",
-      gender: "Male",
-      birthDate: new Date(),
-      nationality: "US",
-      documentType: "Passport",
-      documentNumber: "12345",
-      phoneNumber: "123-456-7890",
-    },
-    address: {
-      streetAddress: "123 Main St",
-      streetAddress2: "Apt 1",
-      city: "Anytown",
-      state: "Anystate",
-      postalCode: "12345",
-      country: "US",
-    },
-  };
+  const validValues = {
+    person: {} as unknown as PersonIn,
+    address: {} as unknown as AddressIn,
+  } as unknown as OnboardingFormValues;
   const mockParse = vi.fn();
 
   async function setup() {
@@ -89,8 +74,8 @@ describe("onboardEffect", () => {
   it("should handle Zod validation errors", async () => {
     mockParse.mockImplementation(() => {
       throw new z.ZodError([
-        { message: "error 1", path: ["field1"], code: "invalid_type" },
-        { message: "error 2", path: ["field2"], code: "invalid_type" },
+        { message: "error 1", path: ["field1"], code: "invalid_type", expected: "string", received: "number" },
+        { message: "error 2", path: ["field2"], code: "invalid_type", expected: "string", received: "number" },
       ]);
     });
 
