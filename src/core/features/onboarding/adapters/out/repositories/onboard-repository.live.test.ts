@@ -15,33 +15,42 @@ describe("OnboardRepositoryLive", () => {
   let mockInsert: ReturnType<typeof vi.fn>;
   let mockTransaction: ReturnType<typeof vi.fn>;
 
+  // Store the valuesMock for each table
+  let clerkUserValuesMock: ReturnType<typeof vi.fn>;
+  let addressValuesMock: ReturnType<typeof vi.fn>;
+  let personValuesMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockOnConflictDoUpdate = vi.fn(() => Promise.resolve());
     mockReturning = vi.fn(() => Promise.resolve([{ id: "mock-address-id" }]));
 
+    clerkUserValuesMock = vi.fn();
+    addressValuesMock = vi.fn();
+    personValuesMock = vi.fn();
+
     mockInsert = vi.fn((table: any) => {
-      const valuesMock = vi.fn((data: any) => {
-        if (table === clerkUser) {
-          return {
-            onConflictDoUpdate: mockOnConflictDoUpdate,
-          };
-        } else if (table === address) {
-          return {
-            returning: mockReturning,
-          };
-        } else if (table === person) {
-          return {
-            returning: vi.fn(() => Promise.resolve([{ id: "mock-person-id" }])),
-          };
-        }
-        return Promise.resolve({});
-      });
-      return { values: valuesMock };
+      if (table === clerkUser) {
+        clerkUserValuesMock.mockImplementation((data: any) => ({
+          onConflictDoUpdate: mockOnConflictDoUpdate,
+        }));
+        return { values: clerkUserValuesMock };
+      } else if (table === address) {
+        addressValuesMock.mockImplementation((data: any) => ({
+          returning: mockReturning,
+        }));
+        return { values: addressValuesMock };
+      } else if (table === person) {
+        personValuesMock.mockImplementation((data: any) => ({
+          returning: vi.fn(() => Promise.resolve([{ id: "mock-person-id" }])),
+        }));
+        return { values: personValuesMock };
+      }
+      return { values: vi.fn(() => Promise.resolve({})) }; // Default
     });
 
-    mockTransaction = vi.fn(async callback => {
+    mockTransaction = vi.fn(async (callback) => {
       const tx = {
         insert: mockInsert,
       };
@@ -53,7 +62,7 @@ describe("OnboardRepositoryLive", () => {
   const MockDrizzleServiceLive = Layer.succeed(DrizzleServiceTag, {
     db: {
       transaction: (callback: any) => mockTransaction(callback),
-    } as any,
+    } as any, // Cast to any to simplify mocking
   });
 
   const testLayer = OnboardRepositoryLive.pipe(
@@ -95,13 +104,52 @@ describe("OnboardRepositoryLive", () => {
 
     expect(mockTransaction).toHaveBeenCalledTimes(1);
     expect(mockInsert).toHaveBeenCalledTimes(3); // clerkUser, address, and person
-    expect(mockOnConflictDoUpdate).toHaveBeenCalledTimes(1); // for clerkUser
-    expect(mockReturning).toHaveBeenCalledTimes(1); // for address
+
+    // Verify clerkUser insert
+    expect(mockInsert).toHaveBeenCalledWith(clerkUser);
+    expect(clerkUserValuesMock).toHaveBeenCalledWith({
+      clerkId: mockOnboardData.clerkUserIn.clerkId,
+      email: mockOnboardData.clerkUserIn.email,
+      imageUrl: mockOnboardData.clerkUserIn.imageUrl,
+    });
+    expect(mockOnConflictDoUpdate).toHaveBeenCalledTimes(1);
+    expect(mockOnConflictDoUpdate).toHaveBeenCalledWith({
+      target: clerkUser.clerkId,
+      set: {
+        email: mockOnboardData.clerkUserIn.email,
+        imageUrl: mockOnboardData.clerkUserIn.imageUrl,
+        updatedAt: sql`now()`,
+      },
+    });
+
+    // Verify address insert
+    expect(mockInsert).toHaveBeenCalledWith(address);
+    expect(addressValuesMock).toHaveBeenCalledWith(mockOnboardData.addressIn);
+    expect(mockReturning).toHaveBeenCalledTimes(1);
+    expect(mockReturning).toHaveBeenCalledWith({ id: address.id });
+
+    // Verify person insert
+    expect(mockInsert).toHaveBeenCalledWith(person);
+    const expectedPersonInsertData = {
+      givenName: mockOnboardData.personIn.givenName,
+      familyName: mockOnboardData.personIn.familyName,
+      gender: mockOnboardData.personIn.gender,
+      birthDate: mockOnboardData.personIn.birthDate.toISOString().split("T")[0],
+      nationality: mockOnboardData.personIn.nationality,
+      documentType: mockOnboardData.personIn.documentType,
+      documentNumber: mockOnboardData.personIn.documentNumber,
+      phoneNumber: mockOnboardData.personIn.phoneNumber,
+      addressId: "mock-address-id", // From mockReturning
+      clerkId: mockOnboardData.clerkUserIn.clerkId,
+    };
+    expect(personValuesMock).toHaveBeenCalledWith(expectedPersonInsertData);
+    expect(personValuesMock.mock.results[0].value.returning).toHaveBeenCalledTimes(1);
+
     expect(result).toBeUndefined();
   });
 
   it("should handle PersonConstraintViolationError", async () => {
-    mockTransaction.mockImplementationOnce(async callback => {
+    mockTransaction.mockImplementationOnce(async (callback) => {
       const tx = {
         insert: vi.fn((table: any) => {
           const valuesMock = vi.fn((data: any) => {
@@ -111,15 +159,12 @@ describe("OnboardRepositoryLive", () => {
               };
             } else if (table === address) {
               return {
-                returning: vi.fn(() =>
-                  Promise.resolve([{ id: "mock-address-id" }])
-                ),
+                returning: vi.fn(() => Promise.resolve([{ id: "mock-address-id" }])),
               };
             } else if (table === person) {
+              // Simulate error on person insert
               throw {
-                cause: {
-                  constraint: "person_document_type_code_document_number_key",
-                },
+                cause: { constraint: "person_document_type_code_document_number_key" },
               };
             }
             return Promise.resolve({});
@@ -149,7 +194,7 @@ describe("OnboardRepositoryLive", () => {
 
   it("should handle other DatabaseQueryError", async () => {
     const mockError = new Error("Database connection failed");
-    mockTransaction.mockImplementationOnce(async callback => {
+    mockTransaction.mockImplementationOnce(async (callback) => {
       const tx = {
         insert: vi.fn((table: any) => {
           const valuesMock = vi.fn((data: any) => {
@@ -159,11 +204,10 @@ describe("OnboardRepositoryLive", () => {
               };
             } else if (table === address) {
               return {
-                returning: vi.fn(() =>
-                  Promise.resolve([{ id: "mock-address-id" }])
-                ),
+                returning: vi.fn(() => Promise.resolve([{ id: "mock-address-id" }])),
               };
             } else if (table === person) {
+              // Simulate error on person insert
               throw mockError;
             }
             return Promise.resolve({});
