@@ -4,7 +4,7 @@ import { z } from "zod";
 import {
   onboardingFormZObject,
   OnboardingFormValues,
-} from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
+} from "@/features/onboarding/adapters/in/schemas/onboarding-form.schema";
 import { ZodValidationError } from "@/errors/zod-validation-error";
 import { ZodUnknownError } from "@/errors/zod-unknown-error";
 import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service.tag";

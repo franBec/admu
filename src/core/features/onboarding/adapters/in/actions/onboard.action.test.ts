@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import { OnboardingFormValues } from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
+import { OnboardingFormValues } from "@/features/onboarding/adapters/in/schemas/onboarding-form.schema";
 import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
 
 beforeEach(() => {
@@ -21,7 +21,7 @@ describe("onboard action", () => {
       }),
     }));
 
-    vi.doMock("./onboard.effect", () => ({
+    vi.doMock("../effects/onboard.effect", () => ({
       onboardEffect: onboardEffectMock,
     }));
 

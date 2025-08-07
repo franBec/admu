@@ -3,14 +3,14 @@
 import * as Effect from "effect/Effect";
 
 import { currentRequestUrl, currentTraceId } from "@/lib/fiber-refs";
-import { OnboardingFormValues } from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
+import { OnboardingFormValues } from "@/features/onboarding/adapters/in/schemas/onboarding-form.schema";
 import { OnboardServiceLive } from "@/features/onboarding/onboard-service.live";
 import { OnboardRepositoryLive } from "@/features/onboarding/adapters/out/repositories/onboard-repository.live";
 import { DrizzleServiceLive } from "@/services/drizzle-service.live";
 import { headers } from "next/headers";
 import { ClerkServiceLive } from "@/services/clerk-service.live";
 import { HEADER_REQUEST_URL, HEADER_TRACE_ID } from "@/utils/constants";
-import { onboardEffect } from "@/features/onboarding/adapters/in/actions/onboard.effect";
+import { onboardEffect } from "@/features/onboarding/adapters/in/effects/onboard.effect";
 
 const label =
   "src/core/features/onboarding/adapters/in/actions/onboard.action.ts>onboardPerson()";

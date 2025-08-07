@@ -1,14 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as Effect from "effect/Effect";
 import { OnboardServiceTag } from "@/features/onboarding/ports/in/onboard-service.tag";
-import { OnboardingFormValues } from "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema";
+import { OnboardingFormValues } from "@/features/onboarding/adapters/in/schemas/onboarding-form.schema";
 import { PersonConstraintViolationError } from "@/errors/person-constraint-violation-error";
 import { z } from "zod";
 
 describe("onboardEffect", () => {
-  const handleError = vi.fn((error, status) =>
-    Effect.succeed({ handled: true, error, status })
-  );
+  const handleError = vi.fn((error, status) => {
+    const problemDetails = {
+      title: error._tag,
+      status: status,
+      instance: null,
+      timestamp: new Date().toISOString(),
+      trace: null,
+      detail: error.message,
+    };
+    return Effect.fail(problemDetails);
+  });
   const defaultError = (self: Effect.Effect<any>) =>
     Effect.catchAll(self, e =>
       Effect.succeed({ handled: true, error: "default", cause: e })
@@ -42,12 +50,12 @@ describe("onboardEffect", () => {
   async function setup() {
     vi.doMock("@/utils/error-handling", () => ({ handleError, defaultError }));
     vi.doMock(
-      "@/features/onboarding/adapters/in/actions/schemas/onboarding-form.schema",
+      "@/features/onboarding/adapters/in/schemas/onboarding-form.schema",
       () => ({
         onboardingFormZObject: { parse: mockParse },
       })
     );
-    
+
     const { onboardEffect } = await import("./onboard.effect");
     return { onboardEffect };
   }
@@ -102,11 +110,15 @@ describe("onboardEffect", () => {
     );
     expect(result).toEqual({
       handled: true,
-      error: expect.objectContaining({
-        _tag: "ZodValidationError",
-        message: "Invalid input: error 1, error 2",
+      error: "default",
+      cause: expect.objectContaining({
+        title: "ZodValidationError",
+        status: 400,
+        instance: null,
+        timestamp: expect.any(String),
+        trace: null,
+        detail: "Invalid input: error 1, error 2",
       }),
-      status: 400,
     });
     expect(mockOnboardPerson).not.toHaveBeenCalled();
   });
@@ -124,7 +136,18 @@ describe("onboardEffect", () => {
     );
 
     expect(handleError).toHaveBeenCalledWith(error, 409);
-    expect(result).toEqual({ handled: true, error, status: 409 });
+    expect(result).toEqual({
+      handled: true,
+      error: "default",
+      cause: expect.objectContaining({
+        title: "PersonConstraintViolationError",
+        status: 409,
+        instance: null,
+        timestamp: expect.any(String),
+        trace: null,
+        detail: "",
+      }),
+    });
   });
 
   it("should use defaultError for unhandled errors", async () => {
