@@ -12,6 +12,7 @@ import { clerkUser, address, person } from "@/db/schema";
 describe("OnboardRepositoryLive", () => {
   let mockOnConflictDoUpdate: ReturnType<typeof vi.fn>;
   let mockReturning: ReturnType<typeof vi.fn>;
+  let mockPersonReturning: ReturnType<typeof vi.fn>; // New mock for person returning
   let mockInsert: ReturnType<typeof vi.fn>;
   let mockTransaction: ReturnType<typeof vi.fn>;
 
@@ -25,26 +26,24 @@ describe("OnboardRepositoryLive", () => {
 
     mockOnConflictDoUpdate = vi.fn(() => Promise.resolve());
     mockReturning = vi.fn(() => Promise.resolve([{ id: "mock-address-id" }]));
+    mockPersonReturning = vi.fn(() => Promise.resolve([{ id: "mock-person-id" }])); // Initialize new mock
 
-    clerkUserValuesMock = vi.fn();
-    addressValuesMock = vi.fn();
-    personValuesMock = vi.fn();
+    clerkUserValuesMock = vi.fn((data: any) => ({
+      onConflictDoUpdate: mockOnConflictDoUpdate,
+    }));
+    addressValuesMock = vi.fn((data: any) => ({
+      returning: mockReturning,
+    }));
+    personValuesMock = vi.fn((data: any) => ({
+      returning: mockPersonReturning,
+    }));
 
     mockInsert = vi.fn((table: any) => {
       if (table === clerkUser) {
-        clerkUserValuesMock.mockImplementation((data: any) => ({
-          onConflictDoUpdate: mockOnConflictDoUpdate,
-        }));
         return { values: clerkUserValuesMock };
       } else if (table === address) {
-        addressValuesMock.mockImplementation((data: any) => ({
-          returning: mockReturning,
-        }));
         return { values: addressValuesMock };
       } else if (table === person) {
-        personValuesMock.mockImplementation((data: any) => ({
-          returning: vi.fn(() => Promise.resolve([{ id: "mock-person-id" }])),
-        }));
         return { values: personValuesMock };
       }
       return { values: vi.fn(() => Promise.resolve({})) }; // Default
@@ -143,7 +142,8 @@ describe("OnboardRepositoryLive", () => {
       clerkId: mockOnboardData.clerkUserIn.clerkId,
     };
     expect(personValuesMock).toHaveBeenCalledWith(expectedPersonInsertData);
-    expect(personValuesMock.mock.results[0].value.returning).toHaveBeenCalledTimes(1);
+    expect(mockPersonReturning).toHaveBeenCalledTimes(1); // Check that returning was called
+    expect(mockPersonReturning).toHaveBeenCalledWith({ id: person.id }); // Check the argument passed to returning
 
     expect(result).toBeUndefined();
   });
