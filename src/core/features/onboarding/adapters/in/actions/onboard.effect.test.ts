@@ -17,7 +17,26 @@ describe("onboardEffect", () => {
   const mockOnboardService = {
     onboardPerson: mockOnboardPerson,
   };
-  const validValues = {} as unknown as OnboardingFormValues;
+  const validValues: OnboardingFormValues = {
+    person: {
+      givenName: "John",
+      familyName: "Doe",
+      gender: "Male",
+      birthDate: new Date(),
+      nationality: "US",
+      documentType: "Passport",
+      documentNumber: "12345",
+      phoneNumber: "123-456-7890",
+    },
+    address: {
+      streetAddress: "123 Main St",
+      streetAddress2: "Apt 1",
+      city: "Anytown",
+      state: "Anystate",
+      postalCode: "12345",
+      country: "US",
+    },
+  };
   const mockParse = vi.fn();
 
   async function setup() {
@@ -28,6 +47,7 @@ describe("onboardEffect", () => {
         onboardingFormZObject: { parse: mockParse },
       })
     );
+    
     const { onboardEffect } = await import("./onboard.effect");
     return { onboardEffect };
   }
@@ -60,7 +80,10 @@ describe("onboardEffect", () => {
 
   it("should handle Zod validation errors", async () => {
     mockParse.mockImplementation(() => {
-      throw new z.ZodError([]);
+      throw new z.ZodError([
+        { message: "error 1", path: ["field1"], code: "invalid_type" },
+        { message: "error 2", path: ["field2"], code: "invalid_type" },
+      ]);
     });
 
     const { onboardEffect } = await setup();
@@ -71,12 +94,18 @@ describe("onboardEffect", () => {
     );
 
     expect(handleError).toHaveBeenCalledWith(
-      expect.objectContaining({ _tag: "ZodValidationError" }),
+      expect.objectContaining({
+        _tag: "ZodValidationError",
+        message: "Invalid input: error 1, error 2",
+      }),
       400
     );
     expect(result).toEqual({
       handled: true,
-      error: expect.objectContaining({ _tag: "ZodValidationError" }),
+      error: expect.objectContaining({
+        _tag: "ZodValidationError",
+        message: "Invalid input: error 1, error 2",
+      }),
       status: 400,
     });
     expect(mockOnboardPerson).not.toHaveBeenCalled();
@@ -116,5 +145,30 @@ describe("onboardEffect", () => {
       error: "default",
       cause: unhandledError,
     });
+  });
+
+  it("should handle Zod unknown errors", async () => {
+    const error = new Error("not a zod error");
+    mockParse.mockImplementation(() => {
+      throw error;
+    });
+
+    const { onboardEffect } = await setup();
+    const result = await Effect.runPromise(
+      onboardEffect(validValues).pipe(
+        Effect.provideService(OnboardServiceTag, mockOnboardService)
+      )
+    );
+
+    expect(handleError).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      handled: true,
+      error: "default",
+      cause: expect.objectContaining({
+        _tag: "ZodUnknownError",
+        e: error,
+      }),
+    });
+    expect(mockOnboardPerson).not.toHaveBeenCalled();
   });
 });
