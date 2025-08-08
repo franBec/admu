@@ -27,8 +27,6 @@ let mockClerkClient: any;
 
 import { currentUser as clerkCurrentUser, User } from "@clerk/nextjs/server";
 
-
-
 describe("ClerkServiceLive", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -43,6 +41,21 @@ describe("ClerkServiceLive", () => {
 
   const runEffectExit = <E, A>(program: Effect.Effect<A, E, ClerkServiceTag>) =>
     Effect.runPromiseExit(Effect.provide(program, ClerkServiceLive));
+
+  const expectEffectToSucceedWith = async <E, A>(
+    program: Effect.Effect<A, E, ClerkServiceTag>,
+    expectedValue: A
+  ) => {
+    const result = await runEffectExit(program);
+    if (Exit.isSuccess(result)) {
+      expect(result.value).toEqual(expectedValue);
+    } else {
+      expect.fail(
+        `Expected success but got failure: ${JSON.stringify(result.cause)}`
+      );
+    }
+    return result;
+  };
 
   const expectEffectToFailWith = async <E, A>(
     program: Effect.Effect<A, E, ClerkServiceTag>,
@@ -61,6 +74,10 @@ describe("ClerkServiceLive", () => {
           `Expected cause to be 'Fail' but got '${result.cause._tag}'`
         );
       }
+    } else {
+      expect.fail(
+        `Expected failure but got success: ${JSON.stringify(result.value)}`
+      );
     }
     return result;
   };
@@ -78,8 +95,7 @@ describe("ClerkServiceLive", () => {
       } as unknown as User;
       vi.mocked(clerkCurrentUser).mockResolvedValue(mockUser);
 
-      const result = await runEffect(program);
-      expect(result).toEqual(mockUser);
+      await expectEffectToSucceedWith(program, mockUser);
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
     });
 
@@ -90,11 +106,38 @@ describe("ClerkServiceLive", () => {
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
     });
 
+    it("should return ClerkCurrentUserNotFoundError only when user is exactly null", async () => {
+      const mockUser = undefined as unknown as User;
+      vi.mocked(clerkCurrentUser).mockResolvedValue(mockUser);
+
+      const result = await runEffect(program);
+      expect(result).toBeUndefined();
+      expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return user even if falsy but not null", async () => {
+      const mockUser = {} as unknown as User;
+      vi.mocked(clerkCurrentUser).mockResolvedValue(mockUser);
+
+      await expectEffectToSucceedWith(program, mockUser);
+      expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
+    });
+
     it("should return ClerkNextjsServerError on unexpected error", async () => {
       const mockError = new Error("Clerk API error");
       vi.mocked(clerkCurrentUser).mockRejectedValue(mockError);
 
       await expectEffectToFailWith(program, ClerkNextjsServerError, mockError);
+      expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
+    });
+
+    it("should distinguish between null and other falsy values", async () => {
+      vi.mocked(clerkCurrentUser).mockResolvedValue(null);
+      await expectEffectToFailWith(program, ClerkCurrentUserNotFoundError);
+      vi.clearAllMocks();
+      vi.mocked(clerkCurrentUser).mockResolvedValue(undefined as any);
+      const result = await runEffect(program);
+      expect(result).toBeUndefined();
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
     });
   });
