@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 import { ClerkServiceLive } from "./clerk-service.live";
 import { ClerkServiceTag } from "./clerk-service.tag";
 import { ClerkNextjsServerError } from "@/core/errors/clerk-nextjs-server-error";
@@ -33,29 +32,18 @@ describe("ClerkServiceLive", () => {
     vi.clearAllMocks();
   });
 
-  const MockClerkServiceLive = Layer.succeed(ClerkServiceTag, {
-    getCurrentUser: () =>
-      Effect.gen(function* () {
-        const service = yield* ClerkServiceTag;
-        return yield* service.getCurrentUser();
-      }),
-    updateUserPublicMetadata: (userId, metadata) =>
-      Effect.gen(function* () {
-        const service = yield* ClerkServiceTag;
-        return yield* service.updateUserPublicMetadata(userId, metadata);
-      }),
-  });
+  const runEffect = <E, A>(program: Effect.Effect<A, E, ClerkServiceTag>) =>
+    Effect.runPromise(Effect.provide(program, ClerkServiceLive));
 
-  const testLayer = ClerkServiceLive.pipe(Layer.provide(MockClerkServiceLive));
+  const runEffectExit = <E, A>(program: Effect.Effect<A, E, ClerkServiceTag>) =>
+    Effect.runPromiseExit(Effect.provide(program, ClerkServiceLive));
 
-  const expectEffectToFailWith = async (
-    program: Effect.Effect<any, any, any>,
+  const expectEffectToFailWith = async <E, A>(
+    program: Effect.Effect<A, E, ClerkServiceTag>,
     expectedError: new (...args: any[]) => any,
     mockError?: Error
   ) => {
-    const result = await Effect.runPromiseExit(
-      Effect.provide(program, testLayer)
-    );
+    const result = await runEffectExit(program);
     expect(result._tag).toBe("Failure");
     expect(result.cause._tag).toBe("Fail");
     expect(result.cause.error).toBeInstanceOf(expectedError);
@@ -75,9 +63,7 @@ describe("ClerkServiceLive", () => {
       const mockUser = { id: "user123", email: "test@example.com" };
       clerkCurrentUser.mockResolvedValue(mockUser);
 
-      const result = await Effect.runPromise(
-        Effect.provide(program, testLayer)
-      );
+      const result = await runEffect(program);
       expect(result).toEqual(mockUser);
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
     });
@@ -109,9 +95,7 @@ describe("ClerkServiceLive", () => {
     it("should update user public metadata successfully", async () => {
       mockUpdateUser.mockResolvedValue(undefined);
 
-      const result = await Effect.runPromise(
-        Effect.provide(program, testLayer)
-      );
+      const result = await runEffect(program);
       expect(result).toBeUndefined();
       expect(mockClerkClient).toHaveBeenCalledTimes(1);
       expect(mockUpdateUser).toHaveBeenCalledTimes(1);
