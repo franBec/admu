@@ -8,25 +8,28 @@ import { ClerkCurrentUserNotFoundError } from "@/core/errors/clerk-current-user-
 
 vi.mock("@clerk/nextjs/server", () => {
   const mockUpdateUser = vi.fn();
-  const mockClerkClient = vi.fn(() => ({
+  const mockClerkClientInstance = {
     users: {
       updateUser: mockUpdateUser,
     },
-  }));
+  };
+  const mockClerkClient = vi.fn(() => mockClerkClientInstance);
+
   return {
     currentUser: vi.fn(),
     clerkClient: mockClerkClient,
-    mockUpdateUser,
-    mockClerkClient,
+    // Export the mock functions so we can access them in tests
+    __mockUpdateUser: mockUpdateUser,
+    __mockClerkClient: mockClerkClient,
   };
 });
 
-import {
-  currentUser as clerkCurrentUser,
-  clerkClient as clerkClerkClient,
-  mockUpdateUser,
-  mockClerkClient,
-} from "@clerk/nextjs/server";
+import { currentUser as clerkCurrentUser, User } from "@clerk/nextjs/server";
+
+// Get references to the mock functions
+const mockModule = await import("@clerk/nextjs/server");
+const mockUpdateUser = (mockModule as any).__mockUpdateUser;
+const mockClerkClient = (mockModule as any).__mockClerkClient;
 
 describe("ClerkServiceLive", () => {
   beforeEach(() => {
@@ -65,8 +68,11 @@ describe("ClerkServiceLive", () => {
     });
 
     it("should return the current user if found", async () => {
-      const mockUser = { id: "user123", email: "test@example.com" };
-      clerkCurrentUser.mockResolvedValue(mockUser);
+      const mockUser = {
+        id: "user123",
+        email: "test@example.com",
+      } as unknown as User;
+      vi.mocked(clerkCurrentUser).mockResolvedValue(mockUser);
 
       const result = await runEffect(program);
       expect(result).toEqual(mockUser);
@@ -74,7 +80,7 @@ describe("ClerkServiceLive", () => {
     });
 
     it("should return ClerkCurrentUserNotFoundError if user is null", async () => {
-      clerkCurrentUser.mockResolvedValue(null);
+      vi.mocked(clerkCurrentUser).mockResolvedValue(null);
 
       await expectEffectToFailWith(program, ClerkCurrentUserNotFoundError);
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
@@ -82,7 +88,7 @@ describe("ClerkServiceLive", () => {
 
     it("should return ClerkNextjsServerError on unexpected error", async () => {
       const mockError = new Error("Clerk API error");
-      clerkCurrentUser.mockRejectedValue(mockError);
+      vi.mocked(clerkCurrentUser).mockRejectedValue(mockError);
 
       await expectEffectToFailWith(program, ClerkNextjsServerError, mockError);
       expect(clerkCurrentUser).toHaveBeenCalledTimes(1);
