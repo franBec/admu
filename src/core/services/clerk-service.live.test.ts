@@ -8,12 +8,11 @@ import { ClerkCurrentUserNotFoundError } from "@/core/errors/clerk-current-user-
 
 vi.mock("@clerk/nextjs/server", () => {
   const mockUpdateUser = vi.fn();
-  const mockClerkClientInstance = {
+  const mockClerkClient = vi.fn(() => ({
     users: {
       updateUser: mockUpdateUser,
     },
-  };
-  const mockClerkClient = vi.fn(() => mockClerkClientInstance);
+  }));
 
   return {
     currentUser: vi.fn(),
@@ -23,15 +22,20 @@ vi.mock("@clerk/nextjs/server", () => {
   };
 });
 
+let mockUpdateUser: any;
+let mockClerkClient: any;
+
 import { currentUser as clerkCurrentUser, User } from "@clerk/nextjs/server";
 
-const mockModule = await import("@clerk/nextjs/server");
-const mockUpdateUser = (mockModule as any).__mockUpdateUser;
-const mockClerkClient = (mockModule as any).__mockClerkClient;
+
 
 describe("ClerkServiceLive", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    // Get references to the mock functions
+    const mockModule = await import("@clerk/nextjs/server");
+    mockUpdateUser = (mockModule as any).__mockUpdateUser;
+    mockClerkClient = (mockModule as any).__mockClerkClient;
   });
 
   const runEffect = <E, A>(program: Effect.Effect<A, E, ClerkServiceTag>) =>
@@ -125,6 +129,14 @@ describe("ClerkServiceLive", () => {
       expect(mockUpdateUser).toHaveBeenCalledWith(userId, {
         publicMetadata: metadata,
       });
+    });
+
+    it("should ensure clerkClient mock has correct structure", () => {
+      expect(mockClerkClient).toBeInstanceOf(Function);
+      const client = mockClerkClient();
+      expect(client).toHaveProperty("users");
+      expect(client.users).toHaveProperty("updateUser");
+      expect(client.users.updateUser).toBeInstanceOf(Function);
     });
   });
 });
