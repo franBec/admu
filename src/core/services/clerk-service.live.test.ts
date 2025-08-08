@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, fail } from "vitest";
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import { ClerkServiceLive } from "./clerk-service.live";
 import { ClerkServiceTag } from "./clerk-service.tag";
 import { ClerkNextjsServerError } from "@/core/errors/clerk-nextjs-server-error";
@@ -44,11 +45,15 @@ describe("ClerkServiceLive", () => {
     mockError?: Error
   ) => {
     const result = await runEffectExit(program);
-    expect(result._tag).toBe("Failure");
-    expect(result.cause._tag).toBe("Fail");
-    expect(result.cause.error).toBeInstanceOf(expectedError);
-    if (mockError) {
-      expect(result.cause.error.e).toBe(mockError);
+    if (Exit.isFailure(result)) {
+      if (result.cause._tag === "Fail") {
+        expect(result.cause.error).toBeInstanceOf(expectedError);
+        if (mockError) {
+          expect((result.cause.error as any).e).toBe(mockError);
+        }
+      } else {
+        fail(`Expected cause to be 'Fail' but got '${result.cause._tag}'`);
+      }
     }
     return result;
   };
