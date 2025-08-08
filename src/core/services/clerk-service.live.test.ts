@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, fail } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import { ClerkServiceLive } from "./clerk-service.live";
@@ -18,7 +18,6 @@ vi.mock("@clerk/nextjs/server", () => {
   return {
     currentUser: vi.fn(),
     clerkClient: mockClerkClient,
-    // Export the mock functions so we can access them in tests
     __mockUpdateUser: mockUpdateUser,
     __mockClerkClient: mockClerkClient,
   };
@@ -26,7 +25,6 @@ vi.mock("@clerk/nextjs/server", () => {
 
 import { currentUser as clerkCurrentUser, User } from "@clerk/nextjs/server";
 
-// Get references to the mock functions
 const mockModule = await import("@clerk/nextjs/server");
 const mockUpdateUser = (mockModule as any).__mockUpdateUser;
 const mockClerkClient = (mockModule as any).__mockClerkClient;
@@ -55,7 +53,9 @@ describe("ClerkServiceLive", () => {
           expect((result.cause.error as any).e).toBe(mockError);
         }
       } else {
-        fail(`Expected cause to be 'Fail' but got '${result.cause._tag}'`);
+        expect.fail(
+          `Expected cause to be 'Fail' but got '${result.cause._tag}'`
+        );
       }
     }
     return result;
